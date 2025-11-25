@@ -18,7 +18,7 @@ const navigationConfig: NavigationTree[] = [
     },
     {
         key: 'OKRsDashboard',
-        path: '/okrs',
+        path: '/OKRsDashboard-view',
         title: 'OKRs',
         translateKey: 'nav.OKRsDashboard',
         icon: 'OKRsDashboard',
