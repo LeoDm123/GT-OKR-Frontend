@@ -19,29 +19,16 @@ export interface KeyResultProps extends CommonProps {
     onUpdateSuccess?: () => void
 }
 
-const getStatusIcon = (status?: string) => {
+const getStatusBadgeColor = (status?: string): string => {
     switch (status) {
         case 'completed':
-            return <HiCheckCircle className="text-emerald-500 text-sm" />
+            return 'bg-emerald-500 text-white'
         case 'at_risk':
-            return <HiExclamationCircle className="text-red-500 text-sm" />
+            return 'bg-red-500 text-white'
         case 'in_progress':
-            return <HiClock className="text-blue-500 text-sm" />
+            return 'bg-blue-500 text-white'
         default:
-            return <HiXCircle className="text-gray-400 text-sm" />
-    }
-}
-
-const getStatusBadge = (status?: string) => {
-    switch (status) {
-        case 'completed':
-            return 'success'
-        case 'at_risk':
-            return 'danger'
-        case 'in_progress':
-            return 'info'
-        default:
-            return 'default'
+            return 'bg-gray-400 text-white'
     }
 }
 
@@ -103,12 +90,11 @@ const KeyResult = ({
             >
                 <div className="flex items-start justify-between mb-2">
                     <div className="flex items-start gap-2 flex-1">
-                        {getStatusIcon(status)}
                         <p className="text-sm text-gray-700 dark:text-gray-300">
                             {keyResult.description}
                         </p>
                     </div>
-                    <Badge variant={getStatusBadge(status)}>
+                    <Badge innerClass={getStatusBadgeColor(status)}>
                         {getStatusLabel(status)}
                     </Badge>
                 </div>
