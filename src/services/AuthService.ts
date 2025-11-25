@@ -10,18 +10,16 @@ import type {
 
 export async function apiSignIn(data: SignInCredential) {
     return ApiService.fetchData<SignInResponse>({
-        url: '/sign-in',
+        url: '/auth/login',
         method: 'post',
         data,
     })
 }
 
 export async function apiSignUp(data: SignUpCredential) {
-    return ApiService.fetchData<SignUpResponse>({
-        url: '/sign-up',
-        method: 'post',
-        data,
-    })
+    // Usar la función createUser de api.tsx
+    const { createUser } = await import('@/api/api')
+    return createUser(data)
 }
 
 export async function apiSignOut() {
