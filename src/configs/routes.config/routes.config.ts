@@ -12,9 +12,9 @@ export const protectedRoutes = [
         authority: [],
     },
     {
-        key: 'cashflowDashboard',
-        path: '/cashflowDashboard-view',
-        component: lazy(() => import('@/views/demo/CashflowDashboard')),
+        key: 'okrsDashboard',
+        path: '/okrsDashboard-view',
+        component: lazy(() => import('@/views/demo/OKRsDashboard')),
         authority: [],
     },
     {

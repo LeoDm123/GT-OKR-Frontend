@@ -29,29 +29,376 @@ export const fetchLoginUser = async (
     }
 }
 
-//DATASET
-export const createDataset = async (datasetData: {
-    datasetName: string
-    originalFileName?: string
-    importedBy?: string
-    currency?: string
-    datasetType: string
-    movements: Array<{
-        fecha: string | Date
-        categoria: any
-        tipo: 'ingreso' | 'egreso'
-        monto: number
-        saldo?: number
-        nota?: string
-        source?: string
-        externalId?: string
-    }>
+export const createUser = async (userData: {
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    [key: string]: any
 }): Promise<any> => {
-    const CREATE_DATASET_ENDPOINT: string = '/dataSet/createDataset'
+    const CREATE_USER_ENDPOINT: string = '/auth/createUser'
+
+    try {
+        const response = await fetch(`${API_BASE_URL}${CREATE_USER_ENDPOINT}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            throw new Error(
+                errorData.msg || `Error al crear usuario: ${response.status}`,
+            )
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error: any) {
+        console.error('Error en createUser:', error)
+        throw error
+    }
+}
+
+//OKR
+export const createOKR = async (okrData: {
+    title: string
+    description?: string
+    owner: string
+    period: 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'annual' | 'custom'
+    year: number
+    startDate: string | Date
+    endDate: string | Date
+    keyResults?: Array<{
+        title: string
+        description?: string
+        targetValue: number
+        unit?: string
+    }>
+    category?: string
+    tags?: string[]
+    notes?: string
+    team?: string
+    visibility?: 'private' | 'public' | 'team'
+}): Promise<any> => {
+    const CREATE_OKR_ENDPOINT: string = '/okr/createOKR'
+
+    try {
+        const token = getAuthToken()
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+        }
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`
+        }
+
+        const response = await fetch(`${API_BASE_URL}${CREATE_OKR_ENDPOINT}`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({
+                ...okrData,
+                startDate:
+                    okrData.startDate instanceof Date
+                        ? okrData.startDate.toISOString()
+                        : okrData.startDate,
+                endDate:
+                    okrData.endDate instanceof Date
+                        ? okrData.endDate.toISOString()
+                        : okrData.endDate,
+            }),
+        })
+
+        if (!response.ok) {
+            if (response.status === 400) {
+                const errorData = await response.json()
+                throw new Error(`Datos inválidos: ${errorData.msg}`)
+            } else {
+                throw new Error(`Error al crear OKR: ${response.status}`)
+            }
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error en createOKR:', error)
+        throw error
+    }
+}
+
+const getAuthToken = (): string | null => {
+    try {
+        // Primero intentar obtener el token del localStorage directo
+        const token = localStorage.getItem('token')
+        if (token) {
+            return token
+        }
+
+        // Luego intentar del store persistido
+        const persistData = localStorage.getItem('admin')
+        if (persistData) {
+            const parsed = JSON.parse(persistData)
+            const persistedToken = parsed?.auth?.session?.token || parsed?.token
+            if (persistedToken) {
+                return persistedToken
+            }
+        }
+
+        // Finalmente usar el token de las variables de entorno si existe
+        return AUTH_TOKEN || null
+    } catch (error) {
+        console.warn('Error al obtener token de autenticación:', error)
+        return AUTH_TOKEN || null
+    }
+}
+
+export const getOKRs = async (filters?: {
+    owner?: string
+    period?: 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'annual' | 'custom'
+    year?: number
+    status?: 'draft' | 'active' | 'completed' | 'paused' | 'cancelled'
+    category?: string
+    team?: string
+    visibility?: 'private' | 'public' | 'team'
+    page?: number
+    limit?: number
+}): Promise<any> => {
+    const GET_OKRS_ENDPOINT: string = '/okr/getOKRs'
+
+    try {
+        const queryParams = new URLSearchParams()
+        if (filters) {
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    queryParams.append(key, String(value))
+                }
+            })
+        }
+
+        const url = queryParams.toString()
+            ? `${API_BASE_URL}${GET_OKRS_ENDPOINT}?${queryParams.toString()}`
+            : `${API_BASE_URL}${GET_OKRS_ENDPOINT}`
+
+        const token = getAuthToken()
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+        }
+
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`
+        }
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers,
+        })
+
+        if (!response.ok) {
+            throw new Error(`Error al obtener OKRs: ${response.status}`)
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error en getOKRs:', error)
+        throw error
+    }
+}
+
+export const getOKRById = async (okrId: string): Promise<any> => {
+    const GET_OKR_ENDPOINT: string = `/okr/getOKRById/${okrId}`
+
+    try {
+        const response = await fetch(`${API_BASE_URL}${GET_OKR_ENDPOINT}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(AUTH_TOKEN
+                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
+                    : {}),
+            },
+        })
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('OKR no encontrado')
+            } else if (response.status === 400) {
+                const errorData = await response.json()
+                throw new Error(`ID inválido: ${errorData.msg}`)
+            } else {
+                throw new Error(`Error al obtener OKR: ${response.status}`)
+            }
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error en getOKRById:', error)
+        throw error
+    }
+}
+
+export const getOKRsByOwner = async (
+    ownerId: string,
+    filters?: {
+        status?: 'draft' | 'active' | 'completed' | 'paused' | 'cancelled'
+        period?: 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'annual' | 'custom'
+        year?: number
+    },
+): Promise<any> => {
+    const GET_OKRS_BY_OWNER_ENDPOINT: string = `/okr/getOKRsByOwner/${ownerId}`
+
+    try {
+        const queryParams = new URLSearchParams()
+        if (filters) {
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    queryParams.append(key, String(value))
+                }
+            })
+        }
+
+        const url = queryParams.toString()
+            ? `${API_BASE_URL}${GET_OKRS_BY_OWNER_ENDPOINT}?${queryParams.toString()}`
+            : `${API_BASE_URL}${GET_OKRS_BY_OWNER_ENDPOINT}`
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(AUTH_TOKEN
+                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
+                    : {}),
+            },
+        })
+
+        if (!response.ok) {
+            throw new Error(
+                `Error al obtener OKRs del usuario: ${response.status}`,
+            )
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error en getOKRsByOwner:', error)
+        throw error
+    }
+}
+
+export const updateOKR = async (
+    okrId: string,
+    updateData: {
+        title?: string
+        description?: string
+        period?: 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'annual' | 'custom'
+        year?: number
+        startDate?: string | Date
+        endDate?: string | Date
+        category?: string
+        tags?: string[]
+        notes?: string
+        team?: string
+        visibility?: 'private' | 'public' | 'team'
+        status?: 'draft' | 'active' | 'completed' | 'paused' | 'cancelled'
+    },
+): Promise<any> => {
+    const UPDATE_OKR_ENDPOINT: string = `/okr/updateOKR/${okrId}`
+
+    try {
+        const bodyData = { ...updateData }
+        if (updateData.startDate) {
+            bodyData.startDate =
+                updateData.startDate instanceof Date
+                    ? updateData.startDate.toISOString()
+                    : updateData.startDate
+        }
+        if (updateData.endDate) {
+            bodyData.endDate =
+                updateData.endDate instanceof Date
+                    ? updateData.endDate.toISOString()
+                    : updateData.endDate
+        }
+
+        const response = await fetch(`${API_BASE_URL}${UPDATE_OKR_ENDPOINT}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(AUTH_TOKEN
+                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
+                    : {}),
+            },
+            body: JSON.stringify(bodyData),
+        })
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('OKR no encontrado')
+            } else if (response.status === 400) {
+                const errorData = await response.json()
+                throw new Error(`Datos inválidos: ${errorData.msg}`)
+            } else {
+                throw new Error(`Error al actualizar OKR: ${response.status}`)
+            }
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error en updateOKR:', error)
+        throw error
+    }
+}
+
+export const deleteOKR = async (okrId: string): Promise<any> => {
+    const DELETE_OKR_ENDPOINT: string = `/okr/deleteOKR/${okrId}`
+
+    try {
+        const response = await fetch(`${API_BASE_URL}${DELETE_OKR_ENDPOINT}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(AUTH_TOKEN
+                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
+                    : {}),
+            },
+        })
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('OKR no encontrado')
+            } else if (response.status === 400) {
+                const errorData = await response.json()
+                throw new Error(`ID inválido: ${errorData.msg}`)
+            } else {
+                throw new Error(`Error al eliminar OKR: ${response.status}`)
+            }
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error en deleteOKR:', error)
+        throw error
+    }
+}
+
+export const addKeyResult = async (
+    okrId: string,
+    keyResultData: {
+        title: string
+        description?: string
+        targetValue: number
+        unit?: string
+    },
+): Promise<any> => {
+    const ADD_KEY_RESULT_ENDPOINT: string = `/okr/addKeyResult/${okrId}`
 
     try {
         const response = await fetch(
-            `${API_BASE_URL}${CREATE_DATASET_ENDPOINT}`,
+            `${API_BASE_URL}${ADD_KEY_RESULT_ENDPOINT}`,
             {
                 method: 'POST',
                 headers: {
@@ -60,76 +407,19 @@ export const createDataset = async (datasetData: {
                         ? { Authorization: `Bearer ${AUTH_TOKEN}` }
                         : {}),
                 },
-                body: JSON.stringify(datasetData),
+                body: JSON.stringify(keyResultData),
             },
         )
 
         if (!response.ok) {
-            if (response.status === 400) {
+            if (response.status === 404) {
+                throw new Error('OKR no encontrado')
+            } else if (response.status === 400) {
                 const errorData = await response.json()
                 throw new Error(`Datos inválidos: ${errorData.msg}`)
-            } else if (response.status === 409) {
-                const errorData = await response.json()
-                throw new Error(`Dataset duplicado: ${errorData.msg}`)
-            } else {
-                throw new Error(`Error al crear dataset: ${response.status}`)
-            }
-        }
-
-        const data = await response.json()
-        return data
-    } catch (error) {
-        console.error('Error en createDataset:', error)
-        throw error
-    }
-}
-
-export const addMovementsToDataset = async (
-    datasetId: string,
-    movements: Array<{
-        fecha: string | Date
-        categoria: any
-        tipo: 'ingreso' | 'egreso'
-        monto: number
-        saldo?: number
-        nota?: string
-    }>,
-): Promise<any> => {
-    const ADD_MOVEMENTS_ENDPOINT: string = `/dataSet/addMovements/${datasetId}`
-
-    try {
-        const response = await fetch(
-            `${API_BASE_URL}${ADD_MOVEMENTS_ENDPOINT}`,
-            {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(AUTH_TOKEN
-                        ? { Authorization: `Bearer ${AUTH_TOKEN}` }
-                        : {}),
-                },
-                body: JSON.stringify({
-                    movements: movements.map((m) => ({
-                        ...m,
-                        fecha:
-                            m.fecha instanceof Date
-                                ? m.fecha.toISOString()
-                                : m.fecha,
-                    })),
-                }),
-            },
-        )
-
-        if (!response.ok) {
-            // Manejar errores específicos basados en el status code
-            if (response.status === 400) {
-                const errorData = await response.json()
-                throw new Error(`Datos inválidos: ${errorData.msg}`)
-            } else if (response.status === 404) {
-                throw new Error('Dataset no encontrado')
             } else {
                 throw new Error(
-                    `Error al agregar movimientos: ${response.status}`,
+                    `Error al agregar Key Result: ${response.status}`,
                 )
             }
         }
@@ -137,45 +427,133 @@ export const addMovementsToDataset = async (
         const data = await response.json()
         return data
     } catch (error) {
-        console.error('Error en addMovementsToDataset:', error)
+        console.error('Error en addKeyResult:', error)
         throw error
     }
 }
 
-export const fetchDatasets = async (): Promise<any> => {
-    const DATASETS_ENDPOINT: string = '/dataSet/getDatasets'
+export const updateKeyResult = async (
+    okrId: string,
+    keyResultId: string,
+    updateData: {
+        title?: string
+        description?: string
+        targetValue?: number
+        currentValue?: number
+        unit?: string
+        status?: 'not_started' | 'in_progress' | 'completed' | 'at_risk'
+    },
+): Promise<any> => {
+    const UPDATE_KEY_RESULT_ENDPOINT: string = `/okr/updateKeyResult/${okrId}/${keyResultId}`
 
     try {
-        const response = await fetch(`${API_BASE_URL}${DATASETS_ENDPOINT}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(AUTH_TOKEN
-                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
-                    : {}),
+        const authToken = getAuthToken()
+        const response = await fetch(
+            `${API_BASE_URL}${UPDATE_KEY_RESULT_ENDPOINT}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken
+                        ? { Authorization: `Bearer ${authToken}` }
+                        : {}),
+                },
+                body: JSON.stringify(updateData),
             },
-        })
+        )
 
         if (!response.ok) {
-            throw new Error(`Error al obtener datasets: ${response.status}`)
+            if (response.status === 404) {
+                const errorData = await response.json()
+                throw new Error(
+                    errorData.msg || 'OKR o Key Result no encontrado',
+                )
+            } else if (response.status === 400) {
+                const errorData = await response.json()
+                throw new Error(`Datos inválidos: ${errorData.msg}`)
+            } else {
+                throw new Error(
+                    `Error al actualizar Key Result: ${response.status}`,
+                )
+            }
         }
 
         const data = await response.json()
         return data
     } catch (error) {
-        console.error('Error en fetchDatasets:', error)
+        console.error('Error en updateKeyResult:', error)
         throw error
     }
 }
 
-export const fetchDataSetByEmail = async (email: string): Promise<any> => {
-    const FETCH_DATASETS_BY_EMAIL_ENDPOINT: string = `/dataSet/getDatasetsByEmail/${email}`
+export const addProgressRecord = async (
+    okrId: string,
+    keyResultId: string,
+    progressRecord: {
+        advanceUnits: number
+        advanceDate: string | Date
+        comment?: string
+    },
+): Promise<any> => {
+    const ADD_PROGRESS_RECORD_ENDPOINT: string = `/okr/addProgressRecord/${okrId}/${keyResultId}`
+
+    try {
+        const authToken = getAuthToken()
+        const response = await fetch(
+            `${API_BASE_URL}${ADD_PROGRESS_RECORD_ENDPOINT}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken
+                        ? { Authorization: `Bearer ${authToken}` }
+                        : {}),
+                },
+                body: JSON.stringify({
+                    ...progressRecord,
+                    advanceDate:
+                        progressRecord.advanceDate instanceof Date
+                            ? progressRecord.advanceDate.toISOString()
+                            : progressRecord.advanceDate,
+                }),
+            },
+        )
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                const errorData = await response.json()
+                throw new Error(
+                    errorData.msg || 'OKR o Key Result no encontrado',
+                )
+            } else if (response.status === 400) {
+                const errorData = await response.json()
+                throw new Error(`Datos inválidos: ${errorData.msg}`)
+            } else {
+                throw new Error(
+                    `Error al agregar registro de progreso: ${response.status}`,
+                )
+            }
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error en addProgressRecord:', error)
+        throw error
+    }
+}
+
+export const deleteKeyResult = async (
+    okrId: string,
+    keyResultId: string,
+): Promise<any> => {
+    const DELETE_KEY_RESULT_ENDPOINT: string = `/okr/deleteKeyResult/${okrId}/${keyResultId}`
 
     try {
         const response = await fetch(
-            `${API_BASE_URL}${FETCH_DATASETS_BY_EMAIL_ENDPOINT}`,
+            `${API_BASE_URL}${DELETE_KEY_RESULT_ENDPOINT}`,
             {
-                method: 'GET',
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                     ...(AUTH_TOKEN
@@ -186,77 +564,70 @@ export const fetchDataSetByEmail = async (email: string): Promise<any> => {
         )
 
         if (!response.ok) {
+            if (response.status === 404) {
+                const errorData = await response.json()
+                throw new Error(
+                    errorData.msg || 'OKR o Key Result no encontrado',
+                )
+            } else if (response.status === 400) {
+                const errorData = await response.json()
+                throw new Error(`ID inválido: ${errorData.msg}`)
+            } else {
+                throw new Error(
+                    `Error al eliminar Key Result: ${response.status}`,
+                )
+            }
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error) {
+        console.error('Error en deleteKeyResult:', error)
+        throw error
+    }
+}
+
+export const getOKRStats = async (filters?: {
+    ownerId?: string
+    year?: number
+    period?: 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'annual' | 'custom'
+}): Promise<any> => {
+    const GET_OKR_STATS_ENDPOINT: string = '/okr/getOKRStats'
+
+    try {
+        const queryParams = new URLSearchParams()
+        if (filters) {
+            Object.entries(filters).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    queryParams.append(key, String(value))
+                }
+            })
+        }
+
+        const url = queryParams.toString()
+            ? `${API_BASE_URL}${GET_OKR_STATS_ENDPOINT}?${queryParams.toString()}`
+            : `${API_BASE_URL}${GET_OKR_STATS_ENDPOINT}`
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(AUTH_TOKEN
+                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
+                    : {}),
+            },
+        })
+
+        if (!response.ok) {
             throw new Error(
-                `Error al obtener datasets por email: ${response.status}`,
+                `Error al obtener estadísticas de OKR: ${response.status}`,
             )
         }
 
         const data = await response.json()
         return data
     } catch (error) {
-        console.error('Error en fetchDataSetByEmail:', error)
-        throw error
-    }
-}
-
-export const getDatasetById = async (datasetId: string): Promise<any> => {
-    const GET_DATASET_ENDPOINT: string = `/dataSet/getDatasetById/${datasetId}`
-
-    try {
-        const response = await fetch(`${API_BASE_URL}${GET_DATASET_ENDPOINT}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(AUTH_TOKEN
-                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
-                    : {}),
-            },
-        })
-
-        if (!response.ok) {
-            // Manejar errores específicos basados en el status code
-            if (response.status === 404) {
-                throw new Error('Dataset no encontrado')
-            } else {
-                throw new Error(`Error al obtener dataset: ${response.status}`)
-            }
-        }
-
-        const data = await response.json()
-        return data
-    } catch (error) {
-        console.error('Error en getDatasetById:', error)
-        throw error
-    }
-}
-
-export const getDatasetByEmail = async (email: string): Promise<any> => {
-    const GET_DATASET_ENDPOINT: string = `/dataSet//getDatasetsByEmail/${email}`
-
-    try {
-        const response = await fetch(`${API_BASE_URL}${GET_DATASET_ENDPOINT}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(AUTH_TOKEN
-                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
-                    : {}),
-            },
-        })
-
-        if (!response.ok) {
-            // Manejar errores específicos basados en el status code
-            if (response.status === 404) {
-                throw new Error('Dataset no encontrado')
-            } else {
-                throw new Error(`Error al obtener dataset: ${response.status}`)
-            }
-        }
-
-        const data = await response.json()
-        return data
-    } catch (error) {
-        console.error('Error en getDatasetByEmail:', error)
+        console.error('Error en getOKRStats:', error)
         throw error
     }
 }

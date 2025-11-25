@@ -81,37 +81,27 @@ function useAuth() {
     const signUp = async (values: SignUpCredential) => {
         try {
             const resp = await apiSignUp(values)
-            if (resp.data) {
-                const { token } = resp.data
-                dispatch(signInSuccess(token))
-                if (resp.data.user) {
-                    dispatch(
-                        setUser(
-                            resp.data.user || {
-                                avatar: '',
-                                userName: 'Anonymous',
-                                authority: ['USER'],
-                                email: '',
-                            },
-                        ),
-                    )
-                }
-                const redirectUrl = query.get(REDIRECT_URL_KEY)
-                navigate(
-                    redirectUrl
-                        ? redirectUrl
-                        : appConfig.authenticatedEntryPath,
-                )
+            // El backend retorna un mensaje de éxito, no token
+            // Después de crear el usuario, redirigir al login
+            if (resp && resp.msg) {
+                // Mostrar mensaje de éxito y redirigir al login
                 return {
                     status: 'success',
-                    message: '',
+                    message: resp.msg || 'Usuario registrado exitosamente',
                 }
+            }
+            return {
+                status: 'success',
+                message: 'Usuario registrado exitosamente',
             }
             // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         } catch (errors: any) {
             return {
                 status: 'failed',
-                message: errors?.response?.data?.message || errors.toString(),
+                message:
+                    errors?.message ||
+                    errors?.response?.data?.msg ||
+                    errors.toString(),
             }
         }
     }

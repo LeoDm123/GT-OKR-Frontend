@@ -15,7 +15,7 @@ export type NavigationIcons = Record<string, JSX.Element>
 const navigationIcon: NavigationIcons = {
     home: <HiOutlineHome />,
     singleMenu: <HiOutlineSquaresPlus />,
-    cashflowDashboard: <HiOutlinePresentationChartBar />,
+    OKRsDashboard: <HiOutlinePresentationChartBar />,
     collapseMenu: <HiOutlineQueueList />,
     groupSingleMenu: <HiOutlineComputerDesktop />,
     groupCollapseMenu: <HiOutlineSwatch />,

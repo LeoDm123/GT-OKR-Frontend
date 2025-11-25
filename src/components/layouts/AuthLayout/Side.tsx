@@ -27,7 +27,7 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                         />
                         <div className="text-dark">
                             <div className="font-semibold text-base">
-                                Company CEO
+                                Ariel Saban
                             </div>
                             <span className="opacity-100">
                                 Co-Founder & CEO
@@ -38,9 +38,9 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                         className="text-lg text-dark opacity-100"
                         style={{ marginBottom: '80px' }}
                     >
-                        Somos un joint venture internacional cuyo fin es crear e
-                        impulsar servicios financieros innovadores y
-                        disruptivos.
+                        Since 2015 we help banks, fintechs and insurance
+                        companies to transform their processes with artificial
+                        intelligence, data and cloud.
                     </p>
                 </div>
                 <span className="text-dark">
