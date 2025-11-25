@@ -1,4 +1,4 @@
-# CardPay MyDash Dashboard
+# QuickDash Dashboard
 
 ## Instalación
 
