@@ -2,10 +2,12 @@ export { default as OkrList } from './OkrList'
 export { default as OkrCategory } from './OkrCategory'
 export { default as OkrItem } from './OkrItem'
 export { default as KeyResult } from './KeyResult'
+export { StatCard, OKRsSummary } from './Dashboard'
 export type { OkrListComponentProps } from './OkrList'
 export type { OkrCategoryProps } from './OkrCategory'
 export type { OkrItemProps } from './OkrItem'
 export type { KeyResultProps } from './KeyResult'
+export type { StatCardProps } from './Dashboard'
 export type {
     Objective,
     KeyResult as KeyResultType,

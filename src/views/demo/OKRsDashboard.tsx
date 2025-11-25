@@ -30,9 +30,9 @@ const OKRsDashboard = () => {
         <div className="p-2 bg-white dark:bg-gray-900 min-h-screen">
             <div className="max-w-7xl mx-auto">
                 {/* Header siempre visible */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                        OKRs Dashboard
+                        Panel de OKRs
                     </h1>
                     <Button
                         variant="solid"

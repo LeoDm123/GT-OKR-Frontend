@@ -83,6 +83,15 @@ const visibilityOptions = [
     { value: 'public', label: 'Público' },
 ]
 
+const categoryOptions = [
+    { value: 'Operations', label: 'Operations' },
+    { value: 'Sales', label: 'Sales' },
+    { value: 'Marketing', label: 'Marketing' },
+    { value: 'Admin & Finance', label: 'Admin & Finance' },
+    { value: 'People - Recruiting', label: 'People - Recruiting' },
+    { value: 'People - C&E', label: 'People - C&E' },
+]
+
 const CreateOKRForm = ({
     owner,
     onSuccess,
@@ -226,6 +235,24 @@ const CreateOKRForm = ({
                                                     )
                                                 }}
                                                 isClearable={false}
+                                                menuPortalTarget={document.body}
+                                                maxMenuHeight={300}
+                                                menuShouldScrollIntoView={true}
+                                                styles={{
+                                                    menuPortal: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menuList: (base) => ({
+                                                        ...base,
+                                                        maxHeight: 300,
+                                                        overflowY: 'auto',
+                                                    }),
+                                                }}
                                             />
                                         </FormItem>
 
@@ -308,12 +335,39 @@ const CreateOKRForm = ({
                                             }
                                             errorMessage={errors.category}
                                         >
-                                            <Field
-                                                type="text"
-                                                autoComplete="off"
-                                                name="category"
-                                                placeholder="Ej: Ventas, Producto, Operaciones"
-                                                component={Input}
+                                            <Select
+                                                options={categoryOptions}
+                                                value={categoryOptions.find(
+                                                    (opt) =>
+                                                        opt.value ===
+                                                        values.category,
+                                                )}
+                                                onChange={(option) => {
+                                                    setFieldValue(
+                                                        'category',
+                                                        option?.value || '',
+                                                    )
+                                                }}
+                                                isClearable={true}
+                                                placeholder="Seleccionar categoría"
+                                                menuPortalTarget={document.body}
+                                                maxMenuHeight={300}
+                                                menuShouldScrollIntoView={true}
+                                                styles={{
+                                                    menuPortal: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menuList: (base) => ({
+                                                        ...base,
+                                                        maxHeight: 300,
+                                                        overflowY: 'auto',
+                                                    }),
+                                                }}
                                             />
                                         </FormItem>
 
@@ -339,6 +393,24 @@ const CreateOKRForm = ({
                                                     )
                                                 }}
                                                 isClearable={false}
+                                                menuPortalTarget={document.body}
+                                                maxMenuHeight={300}
+                                                menuShouldScrollIntoView={true}
+                                                styles={{
+                                                    menuPortal: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menuList: (base) => ({
+                                                        ...base,
+                                                        maxHeight: 300,
+                                                        overflowY: 'auto',
+                                                    }),
+                                                }}
                                             />
                                         </FormItem>
                                     </div>
