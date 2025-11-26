@@ -10,19 +10,32 @@ import type { CommonProps } from '@/components/ui/@types/common'
 export interface OkrCategoryProps extends CommonProps {
     category: OkrCategoryType
     defaultExpanded?: boolean
+    isExpanded?: boolean // Prop controlada desde el padre
+    onToggleExpand?: () => void // Callback para notificar cambios
     onUpdateSuccess?: () => void
 }
 
 const OkrCategory = ({
     category,
     defaultExpanded = false,
+    isExpanded: controlledExpanded,
+    onToggleExpand,
     className,
     onUpdateSuccess,
 }: OkrCategoryProps) => {
-    const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+    // Si se proporciona isExpanded, usar control desde el padre, sino usar estado local
+    const [internalExpanded, setInternalExpanded] = useState(defaultExpanded)
+    const isExpanded =
+        controlledExpanded !== undefined ? controlledExpanded : internalExpanded
 
     const toggleExpand = () => {
-        setIsExpanded(!isExpanded)
+        if (onToggleExpand) {
+            // Si hay callback, notificar al padre
+            onToggleExpand()
+        } else {
+            // Si no, manejar estado local
+            setInternalExpanded(!internalExpanded)
+        }
     }
 
     // Calcular el total de OKRs y el progreso promedio de la categoría
@@ -104,7 +117,7 @@ const OkrCategory = ({
             >
                 {category.objectives.length > 0 ? (
                     <div className="pl-6">
-                        <div className="grid grid-cols-3 gap-4 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                        <div className="grid grid-cols-4 gap-4 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
                             <div className="col-span-1">
                                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                                     Nombre
@@ -113,6 +126,11 @@ const OkrCategory = ({
                             <div className="col-span-1">
                                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                                     Deadline
+                                </span>
+                            </div>
+                            <div className="col-span-1">
+                                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                                    Responsables
                                 </span>
                             </div>
                             <div className="col-span-1">

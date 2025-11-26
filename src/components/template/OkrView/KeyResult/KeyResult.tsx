@@ -2,13 +2,15 @@ import { useState, useMemo } from 'react'
 import Badge from '@/components/ui/Badge'
 import Progress from '@/components/ui/Progress'
 import Button from '@/components/ui/Button'
+import Avatar from '@/components/ui/Avatar'
+import Tooltip from '@/components/ui/Tooltip'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import EditKeyResultDialog from './EditKeyResultDialog'
 import UpdateKeyResultProgressDialog from './UpdateKeyResultProgressDialog'
 import { deleteKeyResult } from '@/api/api'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import { useUsers } from '@/utils/hooks/useUsers'
-import Avatar from '@/components/ui/Avatar'
+import useTwColorByName from '@/utils/hooks/useTwColorByName'
 import classNames from 'classnames'
 import {
     HiCheckCircle,
@@ -75,52 +77,100 @@ const KeyResult = ({
     const [isDeleting, setIsDeleting] = useState(false)
     const [message, setMessage] = useTimeOutMessage()
     const { users } = useUsers()
+    const bgColor = useTwColorByName()
     const status = keyResult.status ?? 'not_started'
     const progress =
         keyResult.current !== undefined && keyResult.target !== undefined
             ? calculateProgress(keyResult.current, keyResult.target)
             : 0
 
-    // Obtener información completa de los responsables
-    const ownerInfo = useMemo(() => {
+    // Obtener información completa de los responsables con iniciales
+    const responsibleInfo = useMemo(() => {
         // El backend usa "responsibles", mantener compatibilidad con "owners"
         const responsibles = keyResult.responsibles || keyResult.owners
         if (!responsibles || responsibles.length === 0) {
             return []
         }
 
-        return responsibles.map((owner) => {
-            // Si owner es un string (ID), buscar el usuario completo
-            if (typeof owner === 'string') {
-                const user = users.find(
-                    (u) => u._id === owner || u.id === owner,
-                )
-                if (user) {
-                    return {
-                        id: user._id || user.id || '',
-                        name:
-                            `${user.firstName || user.personalData?.firstName || ''} ${user.lastName || user.personalData?.lastName || ''}`.trim() ||
-                            user.email ||
-                            'Usuario',
-                        email: user.email,
-                    }
-                }
-                return { id: owner, name: 'Usuario desconocido', email: '' }
-            }
+        return (
+            responsibles
+                .map((responsible) => {
+                    let user = null
+                    let firstName = ''
+                    let lastName = ''
+                    let email = ''
+                    let id = ''
 
-            // Si owner es un objeto, usar sus datos
-            const firstName =
-                owner.firstName || owner.personalData?.firstName || ''
-            const lastName =
-                owner.lastName || owner.personalData?.lastName || ''
-            const name =
-                `${firstName} ${lastName}`.trim() || owner.email || 'Usuario'
-            return {
-                id: owner._id || owner.id || '',
-                name,
-                email: owner.email || '',
-            }
-        })
+                    // Si responsible es un string (ID), buscar el usuario completo
+                    if (typeof responsible === 'string') {
+                        user = users.find(
+                            (u) =>
+                                u._id === responsible ||
+                                u.id === responsible ||
+                                u.email === responsible,
+                        )
+                        if (user) {
+                            firstName =
+                                user.firstName ||
+                                user.personalData?.firstName ||
+                                ''
+                            lastName =
+                                user.lastName ||
+                                user.personalData?.lastName ||
+                                ''
+                            email = user.email || ''
+                            id = user._id || user.id || ''
+                        } else {
+                            return null
+                        }
+                    } else {
+                        // Si responsible es un objeto, usar sus datos
+                        firstName =
+                            responsible.firstName ||
+                            responsible.personalData?.firstName ||
+                            ''
+                        lastName =
+                            responsible.lastName ||
+                            responsible.personalData?.lastName ||
+                            ''
+                        email = responsible.email || ''
+                        id = responsible._id || responsible.id || ''
+                    }
+
+                    // Obtener la inicial (primera letra del nombre o apellido)
+                    let initial = ''
+                    if (firstName) {
+                        initial = firstName.charAt(0).toUpperCase()
+                    } else if (lastName) {
+                        initial = lastName.charAt(0).toUpperCase()
+                    } else if (email) {
+                        initial = email.charAt(0).toUpperCase()
+                    }
+
+                    const fullName =
+                        `${firstName} ${lastName}`.trim() || email || 'Usuario'
+
+                    return {
+                        id,
+                        initial,
+                        fullName,
+                    }
+                })
+                .filter(
+                    (
+                        item,
+                    ): item is {
+                        id: string
+                        initial: string
+                        fullName: string
+                    } => item !== null && item.initial !== '',
+                )
+                // Eliminar duplicados por ID
+                .filter(
+                    (item, index, self) =>
+                        index === self.findIndex((t) => t.id === item.id),
+                )
+        )
     }, [keyResult.responsibles, keyResult.owners, users])
 
     const handleUpdateSuccess = () => {
@@ -226,31 +276,33 @@ const KeyResult = ({
                 )}
 
                 {/* Mostrar responsables */}
-                {ownerInfo.length > 0 && (
+                {responsibleInfo.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
                         <div className="flex items-center gap-2 flex-wrap">
                             <HiUser className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0" />
                             <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
                                 Responsables:
                             </span>
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                                {ownerInfo.map((owner, index) => (
-                                    <div
-                                        key={owner.id || index}
-                                        className="flex items-center gap-1.5"
-                                        onClick={(e) => e.stopPropagation()}
+                            <div className="flex items-center gap-1 flex-wrap">
+                                {responsibleInfo.map((responsible) => (
+                                    <Tooltip
+                                        key={responsible.id}
+                                        title={responsible.fullName}
                                     >
-                                        <Avatar
-                                            size={18}
-                                            shape="circle"
-                                            className="text-[10px] flex-shrink-0"
+                                        <div
+                                            onClick={(e) => e.stopPropagation()}
                                         >
-                                            {owner.name.charAt(0).toUpperCase()}
-                                        </Avatar>
-                                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                                            {owner.name}
-                                        </span>
-                                    </div>
+                                            <Avatar
+                                                size={20}
+                                                shape="circle"
+                                                className={bgColor(
+                                                    responsible.fullName,
+                                                )}
+                                            >
+                                                {responsible.initial}
+                                            </Avatar>
+                                        </div>
+                                    </Tooltip>
                                 ))}
                             </div>
                         </div>

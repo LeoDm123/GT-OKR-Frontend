@@ -1,11 +1,15 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import Progress from '@/components/ui/Progress'
 import Button from '@/components/ui/Button'
+import Avatar from '@/components/ui/Avatar'
+import Tooltip from '@/components/ui/Tooltip'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import { EditOKRDialog } from '../EditOKRForm'
 import { deleteOKR } from '@/api/api'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
+import { useUsers } from '@/utils/hooks/useUsers'
+import useTwColorByName from '@/utils/hooks/useTwColorByName'
 import classNames from 'classnames'
 import { HiChevronDown, HiPencil, HiTrash } from 'react-icons/hi'
 import {
@@ -63,9 +67,85 @@ const OkrItem = ({
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [message, setMessage] = useTimeOutMessage()
+    const { users } = useUsers()
+    const bgColor = useTwColorByName()
     const progress = objective.progress ?? 0
     const hasKeyResults =
         objective.keyResults && objective.keyResults.length > 0
+
+    // Recolectar todos los responsables únicos de todos los Key Results
+    const uniqueResponsibles = useMemo(() => {
+        const responsibleIds = new Set<string>()
+
+        // Recolectar todos los IDs de responsables de todos los Key Results
+        objective.keyResults?.forEach((kr) => {
+            const responsibles = kr.responsibles || kr.owners
+            if (responsibles && responsibles.length > 0) {
+                responsibles.forEach((owner) => {
+                    if (typeof owner === 'string') {
+                        responsibleIds.add(owner)
+                    } else {
+                        const id = owner._id || owner.id
+                        if (id) {
+                            responsibleIds.add(id)
+                        }
+                    }
+                })
+            }
+        })
+
+        // Obtener información completa de los usuarios y generar iniciales
+        return (
+            Array.from(responsibleIds)
+                .map((id) => {
+                    const user = users.find(
+                        (u) => u._id === id || u.id === id || u.email === id,
+                    )
+                    if (user) {
+                        const firstName =
+                            user.firstName || user.personalData?.firstName || ''
+                        const lastName =
+                            user.lastName || user.personalData?.lastName || ''
+
+                        // Obtener la inicial (primera letra del nombre o apellido)
+                        let initial = ''
+                        if (firstName) {
+                            initial = firstName.charAt(0).toUpperCase()
+                        } else if (lastName) {
+                            initial = lastName.charAt(0).toUpperCase()
+                        } else if (user.email) {
+                            initial = user.email.charAt(0).toUpperCase()
+                        }
+
+                        const fullName =
+                            `${firstName} ${lastName}`.trim() ||
+                            user.email ||
+                            'Usuario'
+
+                        return {
+                            id: user._id || user.id || '',
+                            initial,
+                            fullName,
+                        }
+                    }
+                    return null
+                })
+                .filter(
+                    (
+                        item,
+                    ): item is {
+                        id: string
+                        initial: string
+                        fullName: string
+                    } => item !== null && item.initial !== '',
+                )
+                // Eliminar duplicados por ID
+                .filter(
+                    (item, index, self) =>
+                        index === self.findIndex((t) => t.id === item.id),
+                )
+        )
+    }, [objective.keyResults, users])
 
     const toggleExpand = () => {
         if (hasKeyResults) {
@@ -121,7 +201,7 @@ const OkrItem = ({
             <div className={classNames('mb-3', className)}>
                 <div
                     className={classNames(
-                        'grid grid-cols-3 gap-4 items-center py-3 px-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded transition-colors',
+                        'grid grid-cols-4 gap-4 items-center py-3 px-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded transition-colors',
                         hasKeyResults && 'cursor-pointer',
                     )}
                     onClick={toggleExpand}
@@ -150,6 +230,32 @@ const OkrItem = ({
                         <span className="text-sm text-gray-600 dark:text-gray-400">
                             {formatDeadline(objective.dueDate)}
                         </span>
+                    </div>
+
+                    {/* Responsables */}
+                    <div className="col-span-1 flex items-center gap-1">
+                        {uniqueResponsibles.length > 0 ? (
+                            uniqueResponsibles.map((responsible) => (
+                                <Tooltip
+                                    key={responsible.id}
+                                    title={responsible.fullName}
+                                >
+                                    <Avatar
+                                        size={24}
+                                        shape="circle"
+                                        className={bgColor(
+                                            responsible.fullName,
+                                        )}
+                                    >
+                                        {responsible.initial}
+                                    </Avatar>
+                                </Tooltip>
+                            ))
+                        ) : (
+                            <span className="text-xs text-gray-400 dark:text-gray-500">
+                                Sin responsables
+                            </span>
+                        )}
                     </div>
 
                     {/* Progress y Acciones */}
@@ -189,7 +295,7 @@ const OkrItem = ({
                             {hasKeyResults && (
                                 <motion.div
                                     animate={{
-                                        rotate: isExpanded ? 90 : 0,
+                                        rotate: isExpanded ? 180 : 0,
                                     }}
                                     transition={{ duration: 0.2 }}
                                 >

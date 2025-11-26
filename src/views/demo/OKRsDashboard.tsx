@@ -74,9 +74,7 @@ const OKRsDashboard = () => {
                     <div>
                         <OkrList
                             categories={categories}
-                            defaultExpandedCategories={
-                                categories.length > 0 ? [categories[0].id] : []
-                            }
+                            defaultExpandedCategories={[]} // Por defecto todo contraído
                             onUpdateSuccess={refresh}
                         />
                     </div>
