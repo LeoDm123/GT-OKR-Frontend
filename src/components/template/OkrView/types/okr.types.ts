@@ -28,7 +28,8 @@ export interface KeyResult {
     unit?: string
     status?: 'not_started' | 'in_progress' | 'completed' | 'at_risk'
     progressRecords?: ProgressRecord[]
-    owners?: string[] | KeyResultOwner[] // IDs de usuarios o objetos de usuario
+    responsibles?: string[] | KeyResultOwner[] // IDs de usuarios o objetos de usuario (backend usa "responsibles")
+    owners?: string[] | KeyResultOwner[] // Alias para compatibilidad
 }
 
 export interface Objective {

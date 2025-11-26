@@ -63,7 +63,7 @@ export const createUser = async (userData: {
 }
 
 export const getAllUsers = async (): Promise<any> => {
-    const GET_ALL_USERS_ENDPOINT: string = '/auth/getAllUsers'
+    const GET_ALL_USERS_ENDPOINT: string = '/auth/getUsers'
 
     try {
         const authToken = getAuthToken()
@@ -112,7 +112,7 @@ export const createOKR = async (okrData: {
         description?: string
         targetValue: number
         unit?: string
-        owners?: string[]
+        responsibles?: string[]
     }>
     category?: string
     tags?: string[]
@@ -426,7 +426,7 @@ export const addKeyResult = async (
         description?: string
         targetValue: number
         unit?: string
-        owners?: string[]
+        responsibles?: string[]
     },
 ): Promise<any> => {
     const ADD_KEY_RESULT_ENDPOINT: string = `/okr/addKeyResult/${okrId}`
@@ -478,7 +478,8 @@ export const updateKeyResult = async (
         currentValue?: number
         unit?: string
         status?: 'not_started' | 'in_progress' | 'completed' | 'at_risk'
-        owners?: string[]
+        responsibles?: string[]
+        owners?: string[] // Alias para compatibilidad
     },
 ): Promise<any> => {
     const UPDATE_KEY_RESULT_ENDPOINT: string = `/okr/updateKeyResult/${okrId}/${keyResultId}`

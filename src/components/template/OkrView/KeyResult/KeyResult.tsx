@@ -83,11 +83,13 @@ const KeyResult = ({
 
     // Obtener información completa de los responsables
     const ownerInfo = useMemo(() => {
-        if (!keyResult.owners || keyResult.owners.length === 0) {
+        // El backend usa "responsibles", mantener compatibilidad con "owners"
+        const responsibles = keyResult.responsibles || keyResult.owners
+        if (!responsibles || responsibles.length === 0) {
             return []
         }
 
-        return keyResult.owners.map((owner) => {
+        return responsibles.map((owner) => {
             // Si owner es un string (ID), buscar el usuario completo
             if (typeof owner === 'string') {
                 const user = users.find(
@@ -119,7 +121,7 @@ const KeyResult = ({
                 email: owner.email || '',
             }
         })
-    }, [keyResult.owners, users])
+    }, [keyResult.responsibles, keyResult.owners, users])
 
     const handleUpdateSuccess = () => {
         setIsUpdateDialogOpen(false)
