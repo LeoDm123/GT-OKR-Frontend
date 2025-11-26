@@ -125,6 +125,7 @@ const OkrCategory = ({
                             <OkrItem
                                 key={objective.id}
                                 objective={objective}
+                                categoryName={category.name}
                                 onUpdateSuccess={onUpdateSuccess}
                             />
                         ))}

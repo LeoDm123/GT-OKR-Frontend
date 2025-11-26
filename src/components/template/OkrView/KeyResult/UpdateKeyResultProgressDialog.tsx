@@ -119,6 +119,9 @@ const UpdateKeyResultProgressDialog = ({
                         <ProgressRecordsList
                             progressRecords={keyResult.progressRecords}
                             unit={keyResult.unit}
+                            okrId={okrId}
+                            keyResultId={keyResult.id}
+                            onDeleteSuccess={handleSuccess}
                         />
                     </div>
                 </div>

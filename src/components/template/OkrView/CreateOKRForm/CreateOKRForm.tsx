@@ -92,6 +92,33 @@ const categoryOptions = [
     { value: 'People - C&E', label: 'People - C&E' },
 ]
 
+const unitOptions = [
+    { value: '', label: 'Sin unidad' },
+    { value: '%', label: '% (Porcentaje)' },
+    { value: 'unidades', label: 'Unidades' },
+    { value: 'kg', label: 'kg (Kilogramos)' },
+    { value: 'g', label: 'g (Gramos)' },
+    { value: 'l', label: 'l (Litros)' },
+    { value: 'ml', label: 'ml (Mililitros)' },
+    { value: 'm', label: 'm (Metros)' },
+    { value: 'cm', label: 'cm (Centímetros)' },
+    { value: 'km', label: 'km (Kilómetros)' },
+    { value: 'horas', label: 'Horas' },
+    { value: 'minutos', label: 'Minutos' },
+    { value: 'días', label: 'Días' },
+    { value: 'semanas', label: 'Semanas' },
+    { value: 'meses', label: 'Meses' },
+    { value: 'años', label: 'Años' },
+    { value: 'USD', label: 'USD (Dólares)' },
+    { value: 'EUR', label: 'EUR (Euros)' },
+    { value: 'clientes', label: 'Clientes' },
+    { value: 'ventas', label: 'Ventas' },
+    { value: 'proyectos', label: 'Proyectos' },
+    { value: 'tareas', label: 'Tareas' },
+    { value: 'reuniones', label: 'Reuniones' },
+    { value: 'personas', label: 'Personas' },
+]
+
 const CreateOKRForm = ({
     owner,
     onSuccess,
@@ -664,13 +691,68 @@ const CreateOKRForm = ({
                                                                                     ?.unit) as string
                                                                         }
                                                                     >
-                                                                        <Field
-                                                                            type="text"
-                                                                            name={`keyResults.${index}.unit`}
-                                                                            placeholder="%, kg, unidades, etc."
-                                                                            component={
-                                                                                Input
+                                                                        <Select
+                                                                            options={
+                                                                                unitOptions
                                                                             }
+                                                                            value={unitOptions.find(
+                                                                                (
+                                                                                    opt,
+                                                                                ) =>
+                                                                                    opt.value ===
+                                                                                    (values
+                                                                                        .keyResults[
+                                                                                        index
+                                                                                    ]
+                                                                                        ?.unit ??
+                                                                                        ''),
+                                                                            )}
+                                                                            onChange={(
+                                                                                option,
+                                                                            ) => {
+                                                                                setFieldValue(
+                                                                                    `keyResults.${index}.unit`,
+                                                                                    option?.value ??
+                                                                                        '',
+                                                                                )
+                                                                            }}
+                                                                            isClearable={
+                                                                                false
+                                                                            }
+                                                                            placeholder="Seleccionar unidad"
+                                                                            menuPortalTarget={
+                                                                                document.body
+                                                                            }
+                                                                            maxMenuHeight={
+                                                                                300
+                                                                            }
+                                                                            menuShouldScrollIntoView={
+                                                                                true
+                                                                            }
+                                                                            styles={{
+                                                                                menuPortal:
+                                                                                    (
+                                                                                        base,
+                                                                                    ) => ({
+                                                                                        ...base,
+                                                                                        zIndex: 9999,
+                                                                                    }),
+                                                                                menu: (
+                                                                                    base,
+                                                                                ) => ({
+                                                                                    ...base,
+                                                                                    zIndex: 9999,
+                                                                                }),
+                                                                                menuList:
+                                                                                    (
+                                                                                        base,
+                                                                                    ) => ({
+                                                                                        ...base,
+                                                                                        maxHeight: 300,
+                                                                                        overflowY:
+                                                                                            'auto',
+                                                                                    }),
+                                                                            }}
                                                                         />
                                                                     </FormItem>
                                                                 </div>

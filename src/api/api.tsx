@@ -211,13 +211,12 @@ export const getOKRById = async (okrId: string): Promise<any> => {
     const GET_OKR_ENDPOINT: string = `/okr/getOKRById/${okrId}`
 
     try {
+        const authToken = getAuthToken()
         const response = await fetch(`${API_BASE_URL}${GET_OKR_ENDPOINT}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                ...(AUTH_TOKEN
-                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
-                    : {}),
+                ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
             },
         })
 
@@ -322,13 +321,12 @@ export const updateOKR = async (
                     : updateData.endDate
         }
 
+        const authToken = getAuthToken()
         const response = await fetch(`${API_BASE_URL}${UPDATE_OKR_ENDPOINT}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                ...(AUTH_TOKEN
-                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
-                    : {}),
+                ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
             },
             body: JSON.stringify(bodyData),
         })
@@ -356,13 +354,12 @@ export const deleteOKR = async (okrId: string): Promise<any> => {
     const DELETE_OKR_ENDPOINT: string = `/okr/deleteOKR/${okrId}`
 
     try {
+        const authToken = getAuthToken()
         const response = await fetch(`${API_BASE_URL}${DELETE_OKR_ENDPOINT}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                ...(AUTH_TOKEN
-                    ? { Authorization: `Bearer ${AUTH_TOKEN}` }
-                    : {}),
+                ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
             },
         })
 
@@ -397,14 +394,15 @@ export const addKeyResult = async (
     const ADD_KEY_RESULT_ENDPOINT: string = `/okr/addKeyResult/${okrId}`
 
     try {
+        const authToken = getAuthToken()
         const response = await fetch(
             `${API_BASE_URL}${ADD_KEY_RESULT_ENDPOINT}`,
             {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(AUTH_TOKEN
-                        ? { Authorization: `Bearer ${AUTH_TOKEN}` }
+                    ...(authToken
+                        ? { Authorization: `Bearer ${authToken}` }
                         : {}),
                 },
                 body: JSON.stringify(keyResultData),
@@ -543,6 +541,53 @@ export const addProgressRecord = async (
     }
 }
 
+export const deleteProgressRecord = async (
+    okrId: string,
+    keyResultId: string,
+    recordId: string,
+): Promise<any> => {
+    const DELETE_PROGRESS_RECORD_ENDPOINT: string = `/okr/deleteProgressRecord/${okrId}/${keyResultId}/${recordId}`
+
+    try {
+        const authToken = getAuthToken()
+        const response = await fetch(
+            `${API_BASE_URL}${DELETE_PROGRESS_RECORD_ENDPOINT}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken
+                        ? { Authorization: `Bearer ${authToken}` }
+                        : {}),
+                },
+            },
+        )
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                const errorData = await response.json()
+                throw new Error(
+                    errorData.msg ||
+                        'OKR, Key Result o registro de progreso no encontrado',
+                )
+            } else if (response.status === 400) {
+                const errorData = await response.json()
+                throw new Error(`ID inválido: ${errorData.msg}`)
+            } else {
+                throw new Error(
+                    `Error al eliminar registro de progreso: ${response.status}`,
+                )
+            }
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error: any) {
+        console.error('Error en deleteProgressRecord:', error)
+        throw error
+    }
+}
+
 export const deleteKeyResult = async (
     okrId: string,
     keyResultId: string,
@@ -550,14 +595,15 @@ export const deleteKeyResult = async (
     const DELETE_KEY_RESULT_ENDPOINT: string = `/okr/deleteKeyResult/${okrId}/${keyResultId}`
 
     try {
+        const authToken = getAuthToken()
         const response = await fetch(
             `${API_BASE_URL}${DELETE_KEY_RESULT_ENDPOINT}`,
             {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(AUTH_TOKEN
-                        ? { Authorization: `Bearer ${AUTH_TOKEN}` }
+                    ...(authToken
+                        ? { Authorization: `Bearer ${authToken}` }
                         : {}),
                 },
             },
