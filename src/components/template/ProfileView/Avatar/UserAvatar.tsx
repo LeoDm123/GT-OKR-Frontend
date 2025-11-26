@@ -8,7 +8,7 @@ const UserAvatar = () => {
             <Button
                 shape="round"
                 variant="solid"
-                style={{ backgroundColor: '#152e4d', marginTop: '20px' }}
+                style={{ backgroundColor: '#241a43', marginTop: '20px' }}
             >
                 Cambiar Imagen
             </Button>

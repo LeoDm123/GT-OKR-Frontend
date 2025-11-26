@@ -292,12 +292,6 @@ const CreateOKRForm = ({
                                                         opt.value ===
                                                         values.period,
                                                 )}
-                                                onChange={(option) => {
-                                                    setFieldValue(
-                                                        'period',
-                                                        option?.value,
-                                                    )
-                                                }}
                                                 isClearable={false}
                                                 menuPortalTarget={document.body}
                                                 maxMenuHeight={300}
@@ -338,6 +332,12 @@ const CreateOKRForm = ({
                                                         maxHeight: 300,
                                                         overflowY: 'auto',
                                                     }),
+                                                }}
+                                                onChange={(option) => {
+                                                    setFieldValue(
+                                                        'period',
+                                                        option?.value,
+                                                    )
                                                 }}
                                             />
                                         </FormItem>
@@ -398,16 +398,16 @@ const CreateOKRForm = ({
                                                 inputtable
                                                 placeholder="Seleccionar fecha"
                                                 value={values.endDate}
+                                                minDate={
+                                                    values.startDate ||
+                                                    undefined
+                                                }
                                                 onChange={(date) => {
                                                     setFieldValue(
                                                         'endDate',
                                                         date,
                                                     )
                                                 }}
-                                                minDate={
-                                                    values.startDate ||
-                                                    undefined
-                                                }
                                             />
                                         </FormItem>
                                     </div>
@@ -428,12 +428,6 @@ const CreateOKRForm = ({
                                                         opt.value ===
                                                         values.category,
                                                 )}
-                                                onChange={(option) => {
-                                                    setFieldValue(
-                                                        'category',
-                                                        option?.value || '',
-                                                    )
-                                                }}
                                                 isClearable={true}
                                                 placeholder="Seleccionar categoría"
                                                 menuPortalTarget={document.body}
@@ -476,6 +470,12 @@ const CreateOKRForm = ({
                                                         overflowY: 'auto',
                                                     }),
                                                 }}
+                                                onChange={(option) => {
+                                                    setFieldValue(
+                                                        'category',
+                                                        option?.value || '',
+                                                    )
+                                                }}
                                             />
                                         </FormItem>
 
@@ -494,12 +494,6 @@ const CreateOKRForm = ({
                                                         opt.value ===
                                                         values.visibility,
                                                 )}
-                                                onChange={(option) => {
-                                                    setFieldValue(
-                                                        'visibility',
-                                                        option?.value,
-                                                    )
-                                                }}
                                                 isClearable={false}
                                                 menuPortalTarget={document.body}
                                                 maxMenuHeight={300}
@@ -540,6 +534,12 @@ const CreateOKRForm = ({
                                                         maxHeight: 300,
                                                         overflowY: 'auto',
                                                     }),
+                                                }}
+                                                onChange={(option) => {
+                                                    setFieldValue(
+                                                        'visibility',
+                                                        option?.value,
+                                                    )
                                                 }}
                                             />
                                         </FormItem>
@@ -812,15 +812,6 @@ const CreateOKRForm = ({
                                                                                         ?.unit ??
                                                                                         ''),
                                                                             )}
-                                                                            onChange={(
-                                                                                option,
-                                                                            ) => {
-                                                                                setFieldValue(
-                                                                                    `keyResults.${index}.unit`,
-                                                                                    option?.value ??
-                                                                                        '',
-                                                                                )
-                                                                            }}
                                                                             isClearable={
                                                                                 false
                                                                             }
@@ -889,6 +880,15 @@ const CreateOKRForm = ({
                                                                                         overflowY:
                                                                                             'auto',
                                                                                     }),
+                                                                            }}
+                                                                            onChange={(
+                                                                                option,
+                                                                            ) => {
+                                                                                setFieldValue(
+                                                                                    `keyResults.${index}.unit`,
+                                                                                    option?.value ??
+                                                                                        '',
+                                                                                )
                                                                             }}
                                                                         />
                                                                     </FormItem>
@@ -963,21 +963,6 @@ const CreateOKRForm = ({
                                                                                     opt.value,
                                                                                 ),
                                                                         )}
-                                                                        onChange={(
-                                                                            selectedOptions,
-                                                                        ) => {
-                                                                            setFieldValue(
-                                                                                `keyResults.${index}.owners`,
-                                                                                selectedOptions
-                                                                                    ? selectedOptions.map(
-                                                                                          (
-                                                                                              opt,
-                                                                                          ) =>
-                                                                                              opt.value,
-                                                                                      )
-                                                                                    : [],
-                                                                            )
-                                                                        }}
                                                                         isClearable={
                                                                             true
                                                                         }
@@ -1046,6 +1031,21 @@ const CreateOKRForm = ({
                                                                                         'auto',
                                                                                 }),
                                                                         }}
+                                                                        onChange={(
+                                                                            selectedOptions,
+                                                                        ) => {
+                                                                            setFieldValue(
+                                                                                `keyResults.${index}.owners`,
+                                                                                selectedOptions
+                                                                                    ? selectedOptions.map(
+                                                                                          (
+                                                                                              opt,
+                                                                                          ) =>
+                                                                                              opt.value,
+                                                                                      )
+                                                                                    : [],
+                                                                            )
+                                                                        }}
                                                                     />
                                                                 )}
                                                             </FormItem>
@@ -1088,8 +1088,8 @@ const CreateOKRForm = ({
                                 <Button
                                     type="button"
                                     variant="plain"
-                                    onClick={onCancel}
                                     disabled={isSubmitting}
+                                    onClick={onCancel}
                                 >
                                     Cancelar
                                 </Button>
