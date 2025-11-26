@@ -1,14 +1,21 @@
 import { useState } from 'react'
 import Badge from '@/components/ui/Badge'
 import Progress from '@/components/ui/Progress'
+import Button from '@/components/ui/Button'
+import ConfirmDialog from '@/components/shared/ConfirmDialog'
+import EditKeyResultDialog from './EditKeyResultDialog'
+import UpdateKeyResultProgressDialog from './UpdateKeyResultProgressDialog'
+import { deleteKeyResult } from '@/api/api'
+import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
 import classNames from 'classnames'
 import {
     HiCheckCircle,
     HiXCircle,
     HiClock,
     HiExclamationCircle,
+    HiPencil,
+    HiTrash,
 } from 'react-icons/hi'
-import UpdateKeyResultProgressDialog from './UpdateKeyResultProgressDialog'
 import type { KeyResult as KeyResultType } from '../types/okr.types'
 import type { CommonProps } from '@/components/ui/@types/common'
 
@@ -60,6 +67,10 @@ const KeyResult = ({
     className,
 }: KeyResultProps) => {
     const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false)
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
+    const [message, setMessage] = useTimeOutMessage()
     const status = keyResult.status ?? 'not_started'
     const progress =
         keyResult.current !== undefined && keyResult.target !== undefined
@@ -68,6 +79,35 @@ const KeyResult = ({
 
     const handleUpdateSuccess = () => {
         setIsUpdateDialogOpen(false)
+        onUpdateSuccess?.()
+    }
+
+    const handleEditClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        setIsEditDialogOpen(true)
+    }
+
+    const handleDeleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        setIsDeleteDialogOpen(true)
+    }
+
+    const handleConfirmDelete = async () => {
+        setIsDeleting(true)
+        try {
+            await deleteKeyResult(okrId, keyResult.id)
+            setMessage('Key Result eliminado exitosamente')
+            setIsDeleteDialogOpen(false)
+            onUpdateSuccess?.()
+        } catch (error: any) {
+            setMessage(error.message || 'Error al eliminar el Key Result')
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
+    const handleEditSuccess = () => {
+        setIsEditDialogOpen(false)
         onUpdateSuccess?.()
     }
 
@@ -94,9 +134,29 @@ const KeyResult = ({
                             {keyResult.description}
                         </p>
                     </div>
-                    <Badge innerClass={getStatusBadgeColor(status)}>
-                        {getStatusLabel(status)}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                        <div onClick={(e) => e.stopPropagation()}>
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="plain"
+                                icon={<HiPencil />}
+                                onClick={handleEditClick}
+                                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            />
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="plain"
+                                icon={<HiTrash />}
+                                onClick={handleDeleteClick}
+                                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                            />
+                        </div>
+                        <Badge innerClass={getStatusBadgeColor(status)}>
+                            {getStatusLabel(status)}
+                        </Badge>
+                    </div>
                 </div>
 
                 {keyResult.target !== undefined && (
@@ -127,6 +187,33 @@ const KeyResult = ({
                 keyResult={keyResult}
                 objective={objective}
             />
+
+            <EditKeyResultDialog
+                isOpen={isEditDialogOpen}
+                onClose={() => setIsEditDialogOpen(false)}
+                onSuccess={handleEditSuccess}
+                okrId={okrId}
+                keyResult={keyResult}
+            />
+
+            <ConfirmDialog
+                isOpen={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                onCancel={() => setIsDeleteDialogOpen(false)}
+                onConfirm={handleConfirmDelete}
+                type="danger"
+                title="Eliminar Key Result"
+                confirmText={isDeleting ? 'Eliminando...' : 'Eliminar'}
+                cancelText="Cancelar"
+                confirmButtonColor="red"
+                loading={isDeleting}
+            >
+                <p>
+                    ¿Estás seguro de que deseas eliminar este Key Result? Esta
+                    acción no se puede deshacer y se eliminarán todos los
+                    registros de progreso asociados.
+                </p>
+            </ConfirmDialog>
         </>
     )
 }
