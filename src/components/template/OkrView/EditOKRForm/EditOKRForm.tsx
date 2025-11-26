@@ -266,8 +266,8 @@ const EditOKRForm = ({
                                         styles={{
                                             control: (provided) => ({
                                                 ...provided,
-                                                minHeight: '42px',
-                                                height: '42px',
+                                                minHeight: '43.7px',
+                                                height: '43.7px',
                                             }),
                                             valueContainer: (provided) => ({
                                                 ...provided,
@@ -383,8 +383,8 @@ const EditOKRForm = ({
                                         styles={{
                                             control: (provided) => ({
                                                 ...provided,
-                                                minHeight: '42px',
-                                                height: '42px',
+                                                minHeight: '43.7px',
+                                                height: '43.7px',
                                             }),
                                             valueContainer: (provided) => ({
                                                 ...provided,
@@ -444,8 +444,8 @@ const EditOKRForm = ({
                                         styles={{
                                             control: (provided) => ({
                                                 ...provided,
-                                                minHeight: '42px',
-                                                height: '42px',
+                                                minHeight: '43.7px',
+                                                height: '43.7px',
                                             }),
                                             valueContainer: (provided) => ({
                                                 ...provided,

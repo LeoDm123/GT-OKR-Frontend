@@ -25,7 +25,7 @@ interface EditKeyResultFormValues {
     description: string
     targetValue: number
     unit: string
-    owners: string[] // IDs de usuarios responsables
+    responsibles: string[] // IDs de usuarios responsables
 }
 
 const validationSchema = Yup.object().shape({
@@ -80,25 +80,42 @@ const EditKeyResultForm = ({
     const { users, loading: usersLoading } = useUsers()
 
     // Preparar opciones de usuarios para el Select
+    // Mostrar TODOS los usuarios con nombre y apellido
     const userOptions = useMemo(() => {
-        return users
-            .map((user) => ({
-                value: user._id || user.id || '',
-                label:
-                    `${user.firstName || user.personalData?.firstName || ''} ${user.lastName || user.personalData?.lastName || ''}`.trim() ||
-                    user.email ||
-                    'Usuario',
-            }))
-            .filter((opt) => opt.value)
+        const options = users
+            .map((user) => {
+                const userId = user._id || user.id || user.email || ''
+
+                // Construir el label: SOLO nombre y apellido
+                const firstName =
+                    user.firstName || user.personalData?.firstName || ''
+                const lastName =
+                    user.lastName || user.personalData?.lastName || ''
+                const fullName = `${firstName} ${lastName}`.trim()
+
+                // Mostrar nombre y apellido, o "Sin nombre completo" si no tiene ambos
+                const label = fullName || 'Sin nombre completo'
+
+                return {
+                    value: userId,
+                    label: label,
+                    user: user, // Guardar el objeto completo por si acaso
+                }
+            })
+            .filter((opt) => opt.value && opt.value !== '') // Solo filtrar usuarios sin ID válido
+
+        return options
     }, [users])
 
     // Extraer IDs de responsables del keyResult
     const getOwnerIds = (): string[] => {
-        if (!keyResult.owners || keyResult.owners.length === 0) {
+        // El backend usa "responsibles", mantener compatibilidad con "owners"
+        const responsibles = keyResult.responsibles || keyResult.responsibles
+        if (!responsibles || responsibles.length === 0) {
             return []
         }
-        // Si owners es un array de objetos, extraer los IDs
-        return keyResult.owners
+        // Si responsibles es un array de objetos, extraer los IDs
+        return responsibles
             .map((owner) => {
                 if (typeof owner === 'string') {
                     return owner
@@ -113,7 +130,7 @@ const EditKeyResultForm = ({
         description: '',
         targetValue: keyResult.target ?? 0,
         unit: keyResult.unit || '',
-        owners: getOwnerIds(),
+        responsibles: getOwnerIds(),
     }
 
     const handleSubmit = async (
@@ -126,9 +143,9 @@ const EditKeyResultForm = ({
                 description: values.description || undefined,
                 targetValue: values.targetValue,
                 unit: values.unit || undefined,
-                owners:
-                    values.owners && values.owners.length > 0
-                        ? values.owners
+                responsibles:
+                    values.responsibles && values.responsibles.length > 0
+                        ? values.responsibles
                         : undefined,
             }
 
@@ -200,6 +217,7 @@ const EditKeyResultForm = ({
                                         touched.targetValue
                                     }
                                     errorMessage={errors.targetValue}
+                                    className="mb-4"
                                 >
                                     <Field
                                         type="number"
@@ -215,6 +233,7 @@ const EditKeyResultForm = ({
                                     label="Unidad"
                                     invalid={errors.unit && touched.unit}
                                     errorMessage={errors.unit}
+                                    className="mb-4"
                                 >
                                     <Select
                                         options={unitOptions}
@@ -237,8 +256,8 @@ const EditKeyResultForm = ({
                                         styles={{
                                             control: (provided) => ({
                                                 ...provided,
-                                                minHeight: '42px', // Altura estándar para inputs
-                                                height: '42px',
+                                                minHeight: '43.7px', // Altura estándar para inputs
+                                                height: '43.7px',
                                             }),
                                             valueContainer: (provided) => ({
                                                 ...provided,
@@ -276,8 +295,10 @@ const EditKeyResultForm = ({
                             {/* Campo de Responsables */}
                             <FormItem
                                 label="Responsables"
-                                invalid={errors.owners && touched.owners}
-                                errorMessage={errors.owners as string}
+                                invalid={
+                                    errors.responsibles && touched.responsibles
+                                }
+                                errorMessage={errors.responsibles as string}
                                 className="mb-4"
                             >
                                 {usersLoading ? (
@@ -289,11 +310,13 @@ const EditKeyResultForm = ({
                                         isMulti
                                         options={userOptions}
                                         value={userOptions.filter((opt) =>
-                                            values.owners?.includes(opt.value),
+                                            values.responsibles?.includes(
+                                                opt.value,
+                                            ),
                                         )}
                                         onChange={(selectedOptions) => {
                                             setFieldValue(
-                                                'owners',
+                                                'responsibles',
                                                 selectedOptions
                                                     ? selectedOptions.map(
                                                           (opt) => opt.value,
@@ -309,7 +332,7 @@ const EditKeyResultForm = ({
                                         styles={{
                                             control: (provided) => ({
                                                 ...provided,
-                                                minHeight: '42px',
+                                                minHeight: '43.7px',
                                             }),
                                             valueContainer: (provided) => ({
                                                 ...provided,

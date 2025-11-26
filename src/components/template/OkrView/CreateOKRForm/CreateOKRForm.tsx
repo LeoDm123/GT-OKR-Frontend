@@ -7,6 +7,7 @@ import DatePicker from '@/components/ui/DatePicker'
 import Spinner from '@/components/ui/Spinner'
 import { Field, Form, Formik, FieldArray } from 'formik'
 import * as Yup from 'yup'
+import { useMemo } from 'react'
 import { createOKR } from '@/api/api'
 import { HiX, HiPlus } from 'react-icons/hi'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
@@ -133,15 +134,32 @@ const CreateOKRForm = ({
     const currentYear = new Date().getFullYear()
 
     // Preparar opciones de usuarios para el Select
-    const userOptions = users
-        .map((user) => ({
-            value: user._id || user.id || '',
-            label:
-                `${user.firstName || user.personalData?.firstName || ''} ${user.lastName || user.personalData?.lastName || ''}`.trim() ||
-                user.email ||
-                'Usuario',
-        }))
-        .filter((opt) => opt.value) // Filtrar usuarios sin ID válido
+    // Mostrar TODOS los usuarios con nombre y apellido
+    const userOptions = useMemo(() => {
+        const options = users
+            .map((user) => {
+                const userId = user._id || user.id || user.email || ''
+
+                // Construir el label: SOLO nombre y apellido
+                const firstName =
+                    user.firstName || user.personalData?.firstName || ''
+                const lastName =
+                    user.lastName || user.personalData?.lastName || ''
+                const fullName = `${firstName} ${lastName}`.trim()
+
+                // Mostrar nombre y apellido, o "Sin nombre completo" si no tiene ambos
+                const label = fullName || 'Sin nombre completo'
+
+                return {
+                    value: userId,
+                    label: label,
+                    user: user, // Guardar el objeto completo por si acaso
+                }
+            })
+            .filter((opt) => opt.value && opt.value !== '') // Solo filtrar usuarios sin ID válido
+
+        return options
+    }, [users])
 
     const initialValues: CreateOKRFormValues = {
         title: '',
@@ -185,7 +203,7 @@ const CreateOKRForm = ({
                         description: kr.description || undefined,
                         targetValue: kr.targetValue,
                         unit: kr.unit || undefined,
-                        owners:
+                        responsibles:
                             kr.owners && kr.owners.length > 0
                                 ? kr.owners
                                 : undefined,
@@ -287,8 +305,8 @@ const CreateOKRForm = ({
                                                 styles={{
                                                     control: (provided) => ({
                                                         ...provided,
-                                                        minHeight: '42px',
-                                                        height: '42px',
+                                                        minHeight: '43.7px',
+                                                        height: '43.7px',
                                                     }),
                                                     valueContainer: (
                                                         provided,
@@ -424,8 +442,8 @@ const CreateOKRForm = ({
                                                 styles={{
                                                     control: (provided) => ({
                                                         ...provided,
-                                                        minHeight: '42px',
-                                                        height: '42px',
+                                                        minHeight: '43.7px',
+                                                        height: '43.7px',
                                                     }),
                                                     valueContainer: (
                                                         provided,
@@ -489,8 +507,8 @@ const CreateOKRForm = ({
                                                 styles={{
                                                     control: (provided) => ({
                                                         ...provided,
-                                                        minHeight: '42px',
-                                                        height: '42px',
+                                                        minHeight: '43.7px',
+                                                        height: '43.7px',
                                                     }),
                                                     valueContainer: (
                                                         provided,
@@ -718,6 +736,7 @@ const CreateOKRForm = ({
                                                                                 )
                                                                                     ?.targetValue) as string
                                                                         }
+                                                                        className="mb-4"
                                                                     >
                                                                         <Field
                                                                             type="number"
@@ -775,6 +794,7 @@ const CreateOKRForm = ({
                                                                                 )
                                                                                     ?.unit) as string
                                                                         }
+                                                                        className="mb-4"
                                                                     >
                                                                         <Select
                                                                             options={
@@ -822,8 +842,8 @@ const CreateOKRForm = ({
                                                                                     ) => ({
                                                                                         ...provided,
                                                                                         minHeight:
-                                                                                            '42px', // Altura estándar para inputs
-                                                                                        height: '42px',
+                                                                                            '43.7px', // Altura estándar para inputs
+                                                                                        height: '43.7px',
                                                                                     }),
                                                                                 valueContainer:
                                                                                     (
@@ -978,7 +998,7 @@ const CreateOKRForm = ({
                                                                                 ) => ({
                                                                                     ...provided,
                                                                                     minHeight:
-                                                                                        '42px',
+                                                                                        '43.7px',
                                                                                 }),
                                                                             valueContainer:
                                                                                 (
