@@ -4,11 +4,13 @@ import Button from '@/components/ui/Button'
 import Alert from '@/components/ui/Alert'
 import Select from '@/components/ui/Select'
 import DatePicker from '@/components/ui/DatePicker'
+import Spinner from '@/components/ui/Spinner'
 import { Field, Form, Formik, FieldArray } from 'formik'
 import * as Yup from 'yup'
 import { createOKR } from '@/api/api'
 import { HiX, HiPlus } from 'react-icons/hi'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
+import { useUsers } from '@/utils/hooks/useUsers'
 import type { CommonProps } from '@/components/ui/@types/common'
 
 interface KeyResultForm {
@@ -16,6 +18,7 @@ interface KeyResultForm {
     description?: string
     targetValue: number
     unit?: string
+    owners?: string[] // IDs de usuarios responsables
 }
 
 interface CreateOKRFormValues {
@@ -126,7 +129,19 @@ const CreateOKRForm = ({
     className,
 }: CreateOKRFormProps) => {
     const [message, setMessage] = useTimeOutMessage()
+    const { users, loading: usersLoading } = useUsers()
     const currentYear = new Date().getFullYear()
+
+    // Preparar opciones de usuarios para el Select
+    const userOptions = users
+        .map((user) => ({
+            value: user._id || user.id || '',
+            label:
+                `${user.firstName || user.personalData?.firstName || ''} ${user.lastName || user.personalData?.lastName || ''}`.trim() ||
+                user.email ||
+                'Usuario',
+        }))
+        .filter((opt) => opt.value) // Filtrar usuarios sin ID válido
 
     const initialValues: CreateOKRFormValues = {
         title: '',
@@ -170,6 +185,10 @@ const CreateOKRForm = ({
                         description: kr.description || undefined,
                         targetValue: kr.targetValue,
                         unit: kr.unit || undefined,
+                        owners:
+                            kr.owners && kr.owners.length > 0
+                                ? kr.owners
+                                : undefined,
                     })),
             }
 
@@ -266,6 +285,28 @@ const CreateOKRForm = ({
                                                 maxMenuHeight={300}
                                                 menuShouldScrollIntoView={true}
                                                 styles={{
+                                                    control: (provided) => ({
+                                                        ...provided,
+                                                        minHeight: '42px',
+                                                        height: '42px',
+                                                    }),
+                                                    valueContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                        padding: '0 8px',
+                                                    }),
+                                                    input: (provided) => ({
+                                                        ...provided,
+                                                        margin: '0px',
+                                                    }),
+                                                    indicatorsContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                    }),
                                                     menuPortal: (base) => ({
                                                         ...base,
                                                         zIndex: 9999,
@@ -381,6 +422,28 @@ const CreateOKRForm = ({
                                                 maxMenuHeight={300}
                                                 menuShouldScrollIntoView={true}
                                                 styles={{
+                                                    control: (provided) => ({
+                                                        ...provided,
+                                                        minHeight: '42px',
+                                                        height: '42px',
+                                                    }),
+                                                    valueContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                        padding: '0 8px',
+                                                    }),
+                                                    input: (provided) => ({
+                                                        ...provided,
+                                                        margin: '0px',
+                                                    }),
+                                                    indicatorsContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                    }),
                                                     menuPortal: (base) => ({
                                                         ...base,
                                                         zIndex: 9999,
@@ -424,6 +487,28 @@ const CreateOKRForm = ({
                                                 maxMenuHeight={300}
                                                 menuShouldScrollIntoView={true}
                                                 styles={{
+                                                    control: (provided) => ({
+                                                        ...provided,
+                                                        minHeight: '42px',
+                                                        height: '42px',
+                                                    }),
+                                                    valueContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                        padding: '0 8px',
+                                                    }),
+                                                    input: (provided) => ({
+                                                        ...provided,
+                                                        margin: '0px',
+                                                    }),
+                                                    indicatorsContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                    }),
                                                     menuPortal: (base) => ({
                                                         ...base,
                                                         zIndex: 9999,
@@ -730,6 +815,38 @@ const CreateOKRForm = ({
                                                                                 true
                                                                             }
                                                                             styles={{
+                                                                                control:
+                                                                                    (
+                                                                                        provided,
+                                                                                        state,
+                                                                                    ) => ({
+                                                                                        ...provided,
+                                                                                        minHeight:
+                                                                                            '42px', // Altura estándar para inputs
+                                                                                        height: '42px',
+                                                                                    }),
+                                                                                valueContainer:
+                                                                                    (
+                                                                                        provided,
+                                                                                    ) => ({
+                                                                                        ...provided,
+                                                                                        height: '40px',
+                                                                                        padding:
+                                                                                            '0 8px',
+                                                                                    }),
+                                                                                input: (
+                                                                                    provided,
+                                                                                ) => ({
+                                                                                    ...provided,
+                                                                                    margin: '0px',
+                                                                                }),
+                                                                                indicatorsContainer:
+                                                                                    (
+                                                                                        provided,
+                                                                                    ) => ({
+                                                                                        ...provided,
+                                                                                        height: '40px',
+                                                                                    }),
                                                                                 menuPortal:
                                                                                     (
                                                                                         base,
@@ -757,6 +874,161 @@ const CreateOKRForm = ({
                                                                     </FormItem>
                                                                 </div>
                                                             </div>
+
+                                                            {/* Campo de Responsables */}
+                                                            <FormItem
+                                                                label="Responsables"
+                                                                invalid={
+                                                                    (errors.keyResults &&
+                                                                        errors
+                                                                            .keyResults[
+                                                                            index
+                                                                        ] &&
+                                                                        (
+                                                                            errors
+                                                                                .keyResults[
+                                                                                index
+                                                                            ] as any
+                                                                        )
+                                                                            ?.owners &&
+                                                                        touched.keyResults &&
+                                                                        touched
+                                                                            .keyResults[
+                                                                            index
+                                                                        ] &&
+                                                                        (
+                                                                            touched
+                                                                                .keyResults[
+                                                                                index
+                                                                            ] as any
+                                                                        )
+                                                                            ?.owners) as boolean
+                                                                }
+                                                                errorMessage={
+                                                                    (errors.keyResults &&
+                                                                        errors
+                                                                            .keyResults[
+                                                                            index
+                                                                        ] &&
+                                                                        (
+                                                                            errors
+                                                                                .keyResults[
+                                                                                index
+                                                                            ] as any
+                                                                        )
+                                                                            ?.owners) as string
+                                                                }
+                                                            >
+                                                                {usersLoading ? (
+                                                                    <div className="flex items-center justify-center py-2">
+                                                                        <Spinner
+                                                                            size={
+                                                                                20
+                                                                            }
+                                                                        />
+                                                                    </div>
+                                                                ) : (
+                                                                    <Select
+                                                                        isMulti
+                                                                        options={
+                                                                            userOptions
+                                                                        }
+                                                                        value={userOptions.filter(
+                                                                            (
+                                                                                opt,
+                                                                            ) =>
+                                                                                values.keyResults[
+                                                                                    index
+                                                                                ]?.owners?.includes(
+                                                                                    opt.value,
+                                                                                ),
+                                                                        )}
+                                                                        onChange={(
+                                                                            selectedOptions,
+                                                                        ) => {
+                                                                            setFieldValue(
+                                                                                `keyResults.${index}.owners`,
+                                                                                selectedOptions
+                                                                                    ? selectedOptions.map(
+                                                                                          (
+                                                                                              opt,
+                                                                                          ) =>
+                                                                                              opt.value,
+                                                                                      )
+                                                                                    : [],
+                                                                            )
+                                                                        }}
+                                                                        isClearable={
+                                                                            true
+                                                                        }
+                                                                        placeholder="Seleccionar responsables"
+                                                                        menuPortalTarget={
+                                                                            document.body
+                                                                        }
+                                                                        maxMenuHeight={
+                                                                            300
+                                                                        }
+                                                                        menuShouldScrollIntoView={
+                                                                            true
+                                                                        }
+                                                                        styles={{
+                                                                            control:
+                                                                                (
+                                                                                    provided,
+                                                                                ) => ({
+                                                                                    ...provided,
+                                                                                    minHeight:
+                                                                                        '42px',
+                                                                                }),
+                                                                            valueContainer:
+                                                                                (
+                                                                                    provided,
+                                                                                ) => ({
+                                                                                    ...provided,
+                                                                                    minHeight:
+                                                                                        '40px',
+                                                                                    padding:
+                                                                                        '0 8px',
+                                                                                }),
+                                                                            input: (
+                                                                                provided,
+                                                                            ) => ({
+                                                                                ...provided,
+                                                                                margin: '0px',
+                                                                            }),
+                                                                            indicatorsContainer:
+                                                                                (
+                                                                                    provided,
+                                                                                ) => ({
+                                                                                    ...provided,
+                                                                                    height: '40px',
+                                                                                }),
+                                                                            menuPortal:
+                                                                                (
+                                                                                    base,
+                                                                                ) => ({
+                                                                                    ...base,
+                                                                                    zIndex: 9999,
+                                                                                }),
+                                                                            menu: (
+                                                                                base,
+                                                                            ) => ({
+                                                                                ...base,
+                                                                                zIndex: 9999,
+                                                                            }),
+                                                                            menuList:
+                                                                                (
+                                                                                    base,
+                                                                                ) => ({
+                                                                                    ...base,
+                                                                                    maxHeight: 300,
+                                                                                    overflowY:
+                                                                                        'auto',
+                                                                                }),
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </FormItem>
                                                         </div>
                                                     ),
                                                 )}
@@ -778,6 +1050,7 @@ const CreateOKRForm = ({
                                                         description: '',
                                                         targetValue: 0,
                                                         unit: '',
+                                                        owners: [],
                                                     })
                                                 }
                                             >

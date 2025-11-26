@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Badge from '@/components/ui/Badge'
 import Progress from '@/components/ui/Progress'
 import Button from '@/components/ui/Button'
@@ -7,6 +7,8 @@ import EditKeyResultDialog from './EditKeyResultDialog'
 import UpdateKeyResultProgressDialog from './UpdateKeyResultProgressDialog'
 import { deleteKeyResult } from '@/api/api'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
+import { useUsers } from '@/utils/hooks/useUsers'
+import Avatar from '@/components/ui/Avatar'
 import classNames from 'classnames'
 import {
     HiCheckCircle,
@@ -15,6 +17,7 @@ import {
     HiExclamationCircle,
     HiPencil,
     HiTrash,
+    HiUser,
 } from 'react-icons/hi'
 import type { KeyResult as KeyResultType } from '../types/okr.types'
 import type { CommonProps } from '@/components/ui/@types/common'
@@ -71,11 +74,52 @@ const KeyResult = ({
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
     const [message, setMessage] = useTimeOutMessage()
+    const { users } = useUsers()
     const status = keyResult.status ?? 'not_started'
     const progress =
         keyResult.current !== undefined && keyResult.target !== undefined
             ? calculateProgress(keyResult.current, keyResult.target)
             : 0
+
+    // Obtener información completa de los responsables
+    const ownerInfo = useMemo(() => {
+        if (!keyResult.owners || keyResult.owners.length === 0) {
+            return []
+        }
+
+        return keyResult.owners.map((owner) => {
+            // Si owner es un string (ID), buscar el usuario completo
+            if (typeof owner === 'string') {
+                const user = users.find(
+                    (u) => u._id === owner || u.id === owner,
+                )
+                if (user) {
+                    return {
+                        id: user._id || user.id || '',
+                        name:
+                            `${user.firstName || user.personalData?.firstName || ''} ${user.lastName || user.personalData?.lastName || ''}`.trim() ||
+                            user.email ||
+                            'Usuario',
+                        email: user.email,
+                    }
+                }
+                return { id: owner, name: 'Usuario desconocido', email: '' }
+            }
+
+            // Si owner es un objeto, usar sus datos
+            const firstName =
+                owner.firstName || owner.personalData?.firstName || ''
+            const lastName =
+                owner.lastName || owner.personalData?.lastName || ''
+            const name =
+                `${firstName} ${lastName}`.trim() || owner.email || 'Usuario'
+            return {
+                id: owner._id || owner.id || '',
+                name,
+                email: owner.email || '',
+            }
+        })
+    }, [keyResult.owners, users])
 
     const handleUpdateSuccess = () => {
         setIsUpdateDialogOpen(false)
@@ -176,6 +220,38 @@ const KeyResult = ({
                         {keyResult.current !== undefined && progress > 0 && (
                             <Progress percent={progress} size="sm" />
                         )}
+                    </div>
+                )}
+
+                {/* Mostrar responsables */}
+                {ownerInfo.length > 0 && (
+                    <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <HiUser className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                            <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                                Responsables:
+                            </span>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                                {ownerInfo.map((owner, index) => (
+                                    <div
+                                        key={owner.id || index}
+                                        className="flex items-center gap-1.5"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <Avatar
+                                            size={18}
+                                            shape="circle"
+                                            className="text-[10px] flex-shrink-0"
+                                        >
+                                            {owner.name.charAt(0).toUpperCase()}
+                                        </Avatar>
+                                        <span className="text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                            {owner.name}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

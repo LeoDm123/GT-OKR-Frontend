@@ -8,6 +8,18 @@ export interface ProgressRecord {
     updatedAt?: string | Date
 }
 
+export interface KeyResultOwner {
+    _id?: string
+    id?: string
+    email?: string
+    firstName?: string
+    lastName?: string
+    personalData?: {
+        firstName?: string
+        lastName?: string
+    }
+}
+
 export interface KeyResult {
     id: string
     description: string
@@ -16,6 +28,7 @@ export interface KeyResult {
     unit?: string
     status?: 'not_started' | 'in_progress' | 'completed' | 'at_risk'
     progressRecords?: ProgressRecord[]
+    owners?: string[] | KeyResultOwner[] // IDs de usuarios o objetos de usuario
 }
 
 export interface Objective {

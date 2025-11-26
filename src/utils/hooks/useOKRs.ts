@@ -30,6 +30,19 @@ interface ApiOKR {
         progress?: number // Porcentaje de progreso 0-100
         status?: 'not_started' | 'in_progress' | 'completed' | 'at_risk'
         completedAt?: string | Date
+        owners?:
+            | string[]
+            | Array<{
+                  _id?: string
+                  id?: string
+                  email?: string
+                  firstName?: string
+                  lastName?: string
+                  personalData?: {
+                      firstName?: string
+                      lastName?: string
+                  }
+              }>
         progressRecords?: Array<{
             _id?: string
             id?: string
@@ -105,6 +118,7 @@ const transformKeyResult = (kr: any, index: number): KeyResult => {
         unit: kr.unit || '',
         status: transformStatus(kr.status) || 'not_started',
         progressRecords,
+        owners: kr.owners || undefined, // Puede ser array de IDs o objetos de usuario
     }
 }
 
