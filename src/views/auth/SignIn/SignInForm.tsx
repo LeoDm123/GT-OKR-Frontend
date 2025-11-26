@@ -122,7 +122,7 @@ const SignInForm = (props: SignInFormProps) => {
                                     className="mb-0"
                                     name="rememberMe"
                                     component={Checkbox}
-                                    style={{ backgroundColor: '#152e4d' }}
+                                    style={{ backgroundColor: '#241a43' }}
                                 >
                                     Recordarme
                                 </Field>
@@ -135,7 +135,7 @@ const SignInForm = (props: SignInFormProps) => {
                                 loading={isSubmitting}
                                 variant="solid"
                                 type="submit"
-                                style={{ backgroundColor: '#152e4d' }}
+                                style={{ backgroundColor: '#241a43' }}
                             >
                                 {isSubmitting
                                     ? 'Iniciando sesión...'

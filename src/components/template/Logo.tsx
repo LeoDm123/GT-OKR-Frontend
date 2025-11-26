@@ -1,11 +1,13 @@
 import classNames from 'classnames'
 import { APP_NAME } from '@/constants/app.constant'
 import type { CommonProps } from '@/@types/common'
-import LogoImg from '../../../public/img/logo/logo-light-full.png'
+import LogoImgWhite from '../../../public/img/logo/GT_Principal_Blanco_RGB.png'
+import LogoImgDark from '../../../public/img/logo/GT_Principal_ColorPrincipal_RGB.png'
 
 interface LogoProps extends CommonProps {
     type?: 'full' | 'streamline'
     mode?: 'light' | 'dark'
+    background?: 'light' | 'dark'
     ext?: 'png' | 'svg' | 'jpg' | 'jpeg'
     imgClass?: string
     logoWidth?: number | string
@@ -17,7 +19,7 @@ const Logo = (props: LogoProps) => {
     const {
         type = 'full',
         mode = 'light',
-        ext = 'svg',
+        background = 'light',
         className,
         imgClass,
         style,
@@ -35,7 +37,7 @@ const Logo = (props: LogoProps) => {
             <img
                 className={imgClass}
                 //src={`${LOGO_SRC_PATH}logo-${mode}-${type}.${ext}`}
-                src={LogoImg}
+                src={background === 'light' ? LogoImgWhite : LogoImgDark}
                 alt={`${APP_NAME} logo`}
             />
         </div>

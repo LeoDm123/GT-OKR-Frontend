@@ -1,4 +1,7 @@
 import {
+  require_getPrototype
+} from "./chunk-G4KYPH5I.js";
+import {
   require_Stack,
   require_Uint8Array,
   require_arrayLikeKeys,
@@ -24,9 +27,6 @@ import {
   require_getNative,
   require_isObject
 } from "./chunk-5SDCFL6Z.js";
-import {
-  require_getPrototype
-} from "./chunk-G4KYPH5I.js";
 import "./chunk-ZDHRQ4I5.js";
 import {
   require_isArray

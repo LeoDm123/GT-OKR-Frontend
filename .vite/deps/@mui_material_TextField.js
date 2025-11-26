@@ -26,9 +26,6 @@ import {
   require_prop_types
 } from "./chunk-2VYOWSFS.js";
 import {
-  require_jsx_runtime
-} from "./chunk-A2M3UXW3.js";
-import {
   _extends,
   init_extends
 } from "./chunk-DBVXJCBU.js";
@@ -37,12 +34,15 @@ import {
 } from "./chunk-AVUONKA5.js";
 import "./chunk-6CH7HJ37.js";
 import {
+  require_jsx_runtime
+} from "./chunk-A2M3UXW3.js";
+import "./chunk-WX5Z3QDG.js";
+import {
   require_react_dom
 } from "./chunk-AC3TSPAT.js";
 import {
   require_react
 } from "./chunk-LMGCTYIQ.js";
-import "./chunk-WX5Z3QDG.js";
 import {
   __commonJS,
   __esm,
