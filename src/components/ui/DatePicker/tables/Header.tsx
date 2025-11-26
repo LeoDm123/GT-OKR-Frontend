@@ -56,7 +56,7 @@ const Header = (props: HeaderProps) => {
         <div
             className={classNames(
                 'picker-header flex items-center justify-between mb-2',
-                className
+                className,
             )}
             {...rest}
         >
@@ -64,7 +64,7 @@ const Header = (props: HeaderProps) => {
             <div
                 className={classNames(
                     renderCenter && 'justify-between w-full',
-                    'flex items-center rtl:flex-row-reverse'
+                    'flex items-center rtl:flex-row-reverse',
                 )}
             >
                 <Button
@@ -73,32 +73,46 @@ const Header = (props: HeaderProps) => {
                     className={classNames(
                         !hasPrevious &&
                             renderCenter &&
-                            'opacity-0 cursor-default'
+                            'opacity-0 cursor-default',
                     )}
                     size="sm"
                     icon={<HiChevronLeft />}
                     disabled={!hasPrevious}
                     aria-label={previousLabel}
-                    onClick={onPrevious}
-                    onMouseDown={(event) =>
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        onPrevious?.()
+                    }}
+                    onMouseDown={(event) => {
+                        event.stopPropagation()
                         preventFocus && event.preventDefault()
-                    }
+                    }}
+                    onPointerDown={(e) => {
+                        e.stopPropagation()
+                    }}
                 />
                 {renderCenter && renderChildren}
                 <Button
                     type="button"
                     variant="plain"
                     className={classNames(
-                        !hasNext && renderCenter && 'opacity-0 cursor-default'
+                        !hasNext && renderCenter && 'opacity-0 cursor-default',
                     )}
                     size="sm"
                     icon={<HiChevronRight />}
                     disabled={!hasNext}
                     aria-label={nextLabel}
-                    onClick={onNext}
-                    onMouseDown={(event) =>
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        onNext?.()
+                    }}
+                    onMouseDown={(event) => {
+                        event.stopPropagation()
                         preventFocus && event.preventDefault()
-                    }
+                    }}
+                    onPointerDown={(e) => {
+                        e.stopPropagation()
+                    }}
                 />
             </div>
         </div>

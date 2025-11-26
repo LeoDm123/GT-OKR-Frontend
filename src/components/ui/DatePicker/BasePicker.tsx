@@ -26,7 +26,7 @@ import {
     offset,
     flip,
     shift,
-} from '@floating-ui/react';
+} from '@floating-ui/react'
 
 dayjs.extend(localizedFormat)
 
@@ -134,7 +134,7 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
         }
 
         const handleInputBlur = (
-            event: FocusEvent<HTMLInputElement, Element>
+            event: FocusEvent<HTMLInputElement, Element>,
         ) => {
             onBlur?.(event)
             if (inputtable && inputtableBlurClose) {
@@ -143,7 +143,7 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
         }
 
         const handleInputFocus = (
-            event: FocusEvent<HTMLInputElement, Element>
+            event: FocusEvent<HTMLInputElement, Element>,
         ) => {
             onFocus?.(event)
         }
@@ -154,26 +154,51 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
             placement: 'bottom-start',
             middleware: [
                 offset(10),
-                flip({ 
-                    fallbackAxisSideDirection: 'start'
+                flip({
+                    fallbackAxisSideDirection: 'start',
                 }),
-                shift()
+                shift(),
             ],
-            whileElementsMounted: autoUpdate
-        });
+            whileElementsMounted: autoUpdate,
+        })
 
-        const focus = useFocus(context);
-        const click = useClick(context);
-        const dismiss = useDismiss(context);
-        const role = useRole(context);
+        const focus = useFocus(context)
+        const click = useClick(context)
+        const dismiss = useDismiss(context, {
+            outsidePress: (event) => {
+                // Prevenir el cierre si el clic es dentro del panel del calendario
+                const target = event.target as HTMLElement
+                if (!target) return true
+
+                // Verificar si el clic es dentro de cualquier parte del calendario
+                const pickerPanel = target.closest('.picker-panel')
+                const picker = target.closest('.picker')
+                const pickerHeader = target.closest('.picker-header')
+                const calendarBase = target.closest('[class*="calendar"]')
+
+                // No cerrar si el clic es dentro del picker, su panel, header o calendario
+                if (pickerPanel || picker || pickerHeader || calendarBase) {
+                    return false
+                }
+
+                // También verificar si el elemento está dentro del floating element
+                const floatingElement = context.elements.floating
+                if (floatingElement && floatingElement.contains(target)) {
+                    return false
+                }
+
+                return true
+            },
+        })
+        const role = useRole(context)
 
         const { getReferenceProps, getFloatingProps } = useInteractions([
             inputtable ? focus : click,
             dismiss,
-            role
-        ]);
+            role,
+        ])
 
-        const headingId = useId();
+        const headingId = useId()
 
         return (
             <>
@@ -198,23 +223,27 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
                     onChange={onChange}
                     {...getReferenceProps({
                         onBlur: handleInputBlur,
-                        onFocus: handleInputFocus
+                        onFocus: handleInputFocus,
                     })}
                 />
                 {dropdownOpened && (
                     <div
                         className="picker"
-                        ref={refs.setFloating} 
+                        ref={refs.setFloating}
                         style={floatingStyles}
                         aria-labelledby={headingId}
                         {...getFloatingProps()}
+                        onClick={(e) => {
+                            // Prevenir que los clics dentro del calendario cierren el dropdown
+                            e.stopPropagation()
+                        }}
                     >
-                         <div className="picker-panel">{children}</div>
+                        <div className="picker-panel">{children}</div>
                     </div>
                 )}
             </>
         )
-    }
+    },
 )
 
 BasePicker.displayName = 'BasePicker'

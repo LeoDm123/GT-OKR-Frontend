@@ -264,6 +264,26 @@ const EditOKRForm = ({
                                         maxMenuHeight={300}
                                         menuShouldScrollIntoView={true}
                                         styles={{
+                                            control: (provided) => ({
+                                                ...provided,
+                                                minHeight: '42px',
+                                                height: '42px',
+                                            }),
+                                            valueContainer: (provided) => ({
+                                                ...provided,
+                                                height: '40px',
+                                                padding: '0 8px',
+                                            }),
+                                            input: (provided) => ({
+                                                ...provided,
+                                                margin: '0px',
+                                            }),
+                                            indicatorsContainer: (
+                                                provided,
+                                            ) => ({
+                                                ...provided,
+                                                height: '40px',
+                                            }),
                                             menuPortal: (base) => ({
                                                 ...base,
                                                 zIndex: 9999,
@@ -361,6 +381,26 @@ const EditOKRForm = ({
                                         maxMenuHeight={300}
                                         menuShouldScrollIntoView={true}
                                         styles={{
+                                            control: (provided) => ({
+                                                ...provided,
+                                                minHeight: '42px',
+                                                height: '42px',
+                                            }),
+                                            valueContainer: (provided) => ({
+                                                ...provided,
+                                                height: '40px',
+                                                padding: '0 8px',
+                                            }),
+                                            input: (provided) => ({
+                                                ...provided,
+                                                margin: '0px',
+                                            }),
+                                            indicatorsContainer: (
+                                                provided,
+                                            ) => ({
+                                                ...provided,
+                                                height: '40px',
+                                            }),
                                             menuPortal: (base) => ({
                                                 ...base,
                                                 zIndex: 9999,
@@ -402,6 +442,26 @@ const EditOKRForm = ({
                                         maxMenuHeight={300}
                                         menuShouldScrollIntoView={true}
                                         styles={{
+                                            control: (provided) => ({
+                                                ...provided,
+                                                minHeight: '42px',
+                                                height: '42px',
+                                            }),
+                                            valueContainer: (provided) => ({
+                                                ...provided,
+                                                height: '40px',
+                                                padding: '0 8px',
+                                            }),
+                                            input: (provided) => ({
+                                                ...provided,
+                                                margin: '0px',
+                                            }),
+                                            indicatorsContainer: (
+                                                provided,
+                                            ) => ({
+                                                ...provided,
+                                                height: '40px',
+                                            }),
                                             menuPortal: (base) => ({
                                                 ...base,
                                                 zIndex: 9999,

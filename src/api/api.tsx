@@ -62,6 +62,42 @@ export const createUser = async (userData: {
     }
 }
 
+export const getAllUsers = async (): Promise<any> => {
+    const GET_ALL_USERS_ENDPOINT: string = '/auth/getAllUsers'
+
+    try {
+        const authToken = getAuthToken()
+        const response = await fetch(
+            `${API_BASE_URL}${GET_ALL_USERS_ENDPOINT}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken
+                        ? { Authorization: `Bearer ${authToken}` }
+                        : {}),
+                },
+            },
+        )
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error(
+                    'No autorizado para obtener la lista de usuarios',
+                )
+            } else {
+                throw new Error(`Error al obtener usuarios: ${response.status}`)
+            }
+        }
+
+        const data = await response.json()
+        return data
+    } catch (error: any) {
+        console.error('Error en getAllUsers:', error)
+        throw error
+    }
+}
+
 //OKR
 export const createOKR = async (okrData: {
     title: string
@@ -76,6 +112,7 @@ export const createOKR = async (okrData: {
         description?: string
         targetValue: number
         unit?: string
+        owners?: string[]
     }>
     category?: string
     tags?: string[]
@@ -389,6 +426,7 @@ export const addKeyResult = async (
         description?: string
         targetValue: number
         unit?: string
+        owners?: string[]
     },
 ): Promise<any> => {
     const ADD_KEY_RESULT_ENDPOINT: string = `/okr/addKeyResult/${okrId}`
@@ -440,6 +478,7 @@ export const updateKeyResult = async (
         currentValue?: number
         unit?: string
         status?: 'not_started' | 'in_progress' | 'completed' | 'at_risk'
+        owners?: string[]
     },
 ): Promise<any> => {
     const UPDATE_KEY_RESULT_ENDPOINT: string = `/okr/updateKeyResult/${okrId}/${keyResultId}`
