@@ -189,7 +189,7 @@ const OkrItem = ({
                             {hasKeyResults && (
                                 <motion.div
                                     animate={{
-                                        rotate: isExpanded ? 90 : 0,
+                                        rotate: isExpanded ? 180 : 0,
                                     }}
                                     transition={{ duration: 0.2 }}
                                 >

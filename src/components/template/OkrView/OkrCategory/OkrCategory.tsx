@@ -10,19 +10,32 @@ import type { CommonProps } from '@/components/ui/@types/common'
 export interface OkrCategoryProps extends CommonProps {
     category: OkrCategoryType
     defaultExpanded?: boolean
+    isExpanded?: boolean // Prop controlada desde el padre
+    onToggleExpand?: () => void // Callback para notificar cambios
     onUpdateSuccess?: () => void
 }
 
 const OkrCategory = ({
     category,
     defaultExpanded = false,
+    isExpanded: controlledExpanded,
+    onToggleExpand,
     className,
     onUpdateSuccess,
 }: OkrCategoryProps) => {
-    const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+    // Si se proporciona isExpanded, usar control desde el padre, sino usar estado local
+    const [internalExpanded, setInternalExpanded] = useState(defaultExpanded)
+    const isExpanded =
+        controlledExpanded !== undefined ? controlledExpanded : internalExpanded
 
     const toggleExpand = () => {
-        setIsExpanded(!isExpanded)
+        if (onToggleExpand) {
+            // Si hay callback, notificar al padre
+            onToggleExpand()
+        } else {
+            // Si no, manejar estado local
+            setInternalExpanded(!internalExpanded)
+        }
     }
 
     // Calcular el total de OKRs y el progreso promedio de la categoría
