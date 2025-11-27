@@ -326,6 +326,60 @@ const CreateOKRForm = ({
                                                 name="title"
                                                 placeholder="Ej: Aumentar ingresos trimestrales"
                                                 component={Input}
+                                            <Select
+                                                options={periodOptions}
+                                                value={periodOptions.find(
+                                                    (opt) =>
+                                                        opt.value ===
+                                                        values.period,
+                                                )}
+                                                isClearable={false}
+                                                menuPortalTarget={document.body}
+                                                maxMenuHeight={300}
+                                                menuShouldScrollIntoView={true}
+                                                styles={{
+                                                    control: (provided) => ({
+                                                        ...provided,
+                                                        minHeight: '43.7px',
+                                                        height: '43.7px',
+                                                    }),
+                                                    valueContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                        padding: '0 8px',
+                                                    }),
+                                                    input: (provided) => ({
+                                                        ...provided,
+                                                        margin: '0px',
+                                                    }),
+                                                    indicatorsContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                    }),
+                                                    menuPortal: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menuList: (base) => ({
+                                                        ...base,
+                                                        maxHeight: 300,
+                                                        overflowY: 'auto',
+                                                    }),
+                                                }}
+                                                onChange={(option) => {
+                                                    setFieldValue(
+                                                        'period',
+                                                        option?.value,
+                                                    )
+                                                }}
                                             />
                                         </FormItem>
 
@@ -522,6 +576,167 @@ const CreateOKRForm = ({
                                                     }}
                                                 />
                                             </FormItem>
+                                        <FormItem
+                                            label="Fecha de fin *"
+                                            invalid={
+                                                (errors.endDate &&
+                                                    touched.endDate) as boolean
+                                            }
+                                            errorMessage={errors.endDate}
+                                            className="mb-4"
+                                        >
+                                            <DatePicker
+                                                inputtable
+                                                placeholder="Seleccionar fecha"
+                                                value={values.endDate}
+                                                minDate={
+                                                    values.startDate ||
+                                                    undefined
+                                                }
+                                                onChange={(date) => {
+                                                    setFieldValue(
+                                                        'endDate',
+                                                        date,
+                                                    )
+                                                }}
+                                            />
+                                        </FormItem>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                        <FormItem
+                                            label="Categoría"
+                                            invalid={
+                                                (errors.category &&
+                                                    touched.category) as boolean
+                                            }
+                                            errorMessage={errors.category}
+                                        >
+                                            <Select
+                                                options={categoryOptions}
+                                                value={categoryOptions.find(
+                                                    (opt) =>
+                                                        opt.value ===
+                                                        values.category,
+                                                )}
+                                                isClearable={true}
+                                                placeholder="Seleccionar categoría"
+                                                menuPortalTarget={document.body}
+                                                maxMenuHeight={300}
+                                                menuShouldScrollIntoView={true}
+                                                styles={{
+                                                    control: (provided) => ({
+                                                        ...provided,
+                                                        minHeight: '43.7px',
+                                                        height: '43.7px',
+                                                    }),
+                                                    valueContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                        padding: '0 8px',
+                                                    }),
+                                                    input: (provided) => ({
+                                                        ...provided,
+                                                        margin: '0px',
+                                                    }),
+                                                    indicatorsContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                    }),
+                                                    menuPortal: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menuList: (base) => ({
+                                                        ...base,
+                                                        maxHeight: 300,
+                                                        overflowY: 'auto',
+                                                    }),
+                                                }}
+                                                onChange={(option) => {
+                                                    setFieldValue(
+                                                        'category',
+                                                        option?.value || '',
+                                                    )
+                                                }}
+                                            />
+                                        </FormItem>
+
+                                        <FormItem
+                                            label="Visibilidad *"
+                                            invalid={
+                                                (errors.visibility &&
+                                                    touched.visibility) as boolean
+                                            }
+                                            errorMessage={errors.visibility}
+                                        >
+                                            <Select
+                                                options={visibilityOptions}
+                                                value={visibilityOptions.find(
+                                                    (opt) =>
+                                                        opt.value ===
+                                                        values.visibility,
+                                                )}
+                                                isClearable={false}
+                                                menuPortalTarget={document.body}
+                                                maxMenuHeight={300}
+                                                menuShouldScrollIntoView={true}
+                                                styles={{
+                                                    control: (provided) => ({
+                                                        ...provided,
+                                                        minHeight: '43.7px',
+                                                        height: '43.7px',
+                                                    }),
+                                                    valueContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                        padding: '0 8px',
+                                                    }),
+                                                    input: (provided) => ({
+                                                        ...provided,
+                                                        margin: '0px',
+                                                    }),
+                                                    indicatorsContainer: (
+                                                        provided,
+                                                    ) => ({
+                                                        ...provided,
+                                                        height: '40px',
+                                                    }),
+                                                    menuPortal: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        zIndex: 9999,
+                                                    }),
+                                                    menuList: (base) => ({
+                                                        ...base,
+                                                        maxHeight: 300,
+                                                        overflowY: 'auto',
+                                                    }),
+                                                }}
+                                                onChange={(option) => {
+                                                    setFieldValue(
+                                                        'visibility',
+                                                        option?.value,
+                                                    )
+                                                }}
+                                            />
+                                        </FormItem>
+                                    </div>
+                                </FormContainer>
+                            </div>
 
                                             <FormItem
                                                 label="Fecha de fin *"
@@ -1198,6 +1413,15 @@ const CreateOKRForm = ({
                                                                                             'auto',
                                                                                     }),
                                                                             }}
+                                                                            onChange={(
+                                                                                option,
+                                                                            ) => {
+                                                                                setFieldValue(
+                                                                                    `keyResults.${index}.unit`,
+                                                                                    option?.value ??
+                                                                                        '',
+                                                                                )
+                                                                            }}
                                                                         />
                                                                     )}
                                                                 </FormItem>
@@ -1231,6 +1455,190 @@ const CreateOKRForm = ({
                                             )}
                                         </FieldArray>
                                     </div>
+
+                                                            {/* Campo de Responsables */}
+                                                            <FormItem
+                                                                label="Responsables"
+                                                                invalid={
+                                                                    (errors.keyResults &&
+                                                                        errors
+                                                                            .keyResults[
+                                                                            index
+                                                                        ] &&
+                                                                        (
+                                                                            errors
+                                                                                .keyResults[
+                                                                                index
+                                                                            ] as any
+                                                                        )
+                                                                            ?.owners &&
+                                                                        touched.keyResults &&
+                                                                        touched
+                                                                            .keyResults[
+                                                                            index
+                                                                        ] &&
+                                                                        (
+                                                                            touched
+                                                                                .keyResults[
+                                                                                index
+                                                                            ] as any
+                                                                        )
+                                                                            ?.owners) as boolean
+                                                                }
+                                                                errorMessage={
+                                                                    (errors.keyResults &&
+                                                                        errors
+                                                                            .keyResults[
+                                                                            index
+                                                                        ] &&
+                                                                        (
+                                                                            errors
+                                                                                .keyResults[
+                                                                                index
+                                                                            ] as any
+                                                                        )
+                                                                            ?.owners) as string
+                                                                }
+                                                            >
+                                                                {usersLoading ? (
+                                                                    <div className="flex items-center justify-center py-2">
+                                                                        <Spinner
+                                                                            size={
+                                                                                20
+                                                                            }
+                                                                        />
+                                                                    </div>
+                                                                ) : (
+                                                                    <Select
+                                                                        isMulti
+                                                                        options={
+                                                                            userOptions
+                                                                        }
+                                                                        value={userOptions.filter(
+                                                                            (
+                                                                                opt,
+                                                                            ) =>
+                                                                                values.keyResults[
+                                                                                    index
+                                                                                ]?.owners?.includes(
+                                                                                    opt.value,
+                                                                                ),
+                                                                        )}
+                                                                        isClearable={
+                                                                            true
+                                                                        }
+                                                                        placeholder="Seleccionar responsables"
+                                                                        menuPortalTarget={
+                                                                            document.body
+                                                                        }
+                                                                        maxMenuHeight={
+                                                                            300
+                                                                        }
+                                                                        menuShouldScrollIntoView={
+                                                                            true
+                                                                        }
+                                                                        styles={{
+                                                                            control:
+                                                                                (
+                                                                                    provided,
+                                                                                ) => ({
+                                                                                    ...provided,
+                                                                                    minHeight:
+                                                                                        '43.7px',
+                                                                                }),
+                                                                            valueContainer:
+                                                                                (
+                                                                                    provided,
+                                                                                ) => ({
+                                                                                    ...provided,
+                                                                                    minHeight:
+                                                                                        '40px',
+                                                                                    padding:
+                                                                                        '0 8px',
+                                                                                }),
+                                                                            input: (
+                                                                                provided,
+                                                                            ) => ({
+                                                                                ...provided,
+                                                                                margin: '0px',
+                                                                            }),
+                                                                            indicatorsContainer:
+                                                                                (
+                                                                                    provided,
+                                                                                ) => ({
+                                                                                    ...provided,
+                                                                                    height: '40px',
+                                                                                }),
+                                                                            menuPortal:
+                                                                                (
+                                                                                    base,
+                                                                                ) => ({
+                                                                                    ...base,
+                                                                                    zIndex: 9999,
+                                                                                }),
+                                                                            menu: (
+                                                                                base,
+                                                                            ) => ({
+                                                                                ...base,
+                                                                                zIndex: 9999,
+                                                                            }),
+                                                                            menuList:
+                                                                                (
+                                                                                    base,
+                                                                                ) => ({
+                                                                                    ...base,
+                                                                                    maxHeight: 300,
+                                                                                    overflowY:
+                                                                                        'auto',
+                                                                                }),
+                                                                        }}
+                                                                        onChange={(
+                                                                            selectedOptions,
+                                                                        ) => {
+                                                                            setFieldValue(
+                                                                                `keyResults.${index}.owners`,
+                                                                                selectedOptions
+                                                                                    ? selectedOptions.map(
+                                                                                          (
+                                                                                              opt,
+                                                                                          ) =>
+                                                                                              opt.value,
+                                                                                      )
+                                                                                    : [],
+                                                                            )
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </FormItem>
+                                                        </div>
+                                                    ),
+                                                )}
+                                            </div>
+                                        )}
+                                    </FieldArray>
+                                </div>
+                                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                    <FieldArray name="keyResults">
+                                        {({ push }) => (
+                                            <Button
+                                                type="button"
+                                                variant="plain"
+                                                size="sm"
+                                                icon={<HiPlus />}
+                                                onClick={() =>
+                                                    push({
+                                                        title: '',
+                                                        description: '',
+                                                        targetValue: 0,
+                                                        unit: '',
+                                                        owners: [],
+                                                    })
+                                                }
+                                            >
+                                                Agregar Key Result
+                                            </Button>
+                                        )}
+                                    </FieldArray>
                                 </div>
                             </div>
 
@@ -1250,7 +1658,10 @@ const CreateOKRForm = ({
                                     type="submit"
                                     variant="solid"
                                     loading={isSubmitting}
+                                    type="button"
+                                    variant="plain"
                                     disabled={isSubmitting}
+                                    onClick={onCancel}
                                 >
                                     Crear OKR
                                 </Button>

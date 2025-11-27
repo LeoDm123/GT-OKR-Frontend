@@ -4,7 +4,7 @@ const SignIn = () => {
     return (
         <>
             <div className="mb-8">
-                <h3 className="mb-1 text-center" style={{ color: '#152e4d' }}>
+                <h3 className="mb-1 text-center" style={{ color: '#241a43' }}>
                     ¡Bienvenido de vuelta!
                 </h3>
                 <p className="text-center">

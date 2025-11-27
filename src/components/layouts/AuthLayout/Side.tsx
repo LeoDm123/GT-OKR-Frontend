@@ -14,10 +14,10 @@ const Side = ({ children, content, ...rest }: SideProps) => {
             <div
                 className="bg-no-repeat bg-cover py-6 px-16 flex-col justify-between hidden lg:flex"
                 style={{
-                    backgroundImage: `url('/img/others/auth-cover-bg.jpeg')`,
+                    backgroundColor: '#9276b4',
                 }}
             >
-                <Logo mode="dark" />
+                <Logo mode="dark" background="dark" />
                 <div>
                     <div className="mb-6 flex items-center gap-4">
                         <Avatar
@@ -26,16 +26,16 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                             src="/img/avatars/ceo-1.jpg"
                         />
                         <div className="text-dark">
-                            <div className="font-semibold text-base">
+                            <div className="font-semibold text-base text-white">
                                 Ariel Saban
                             </div>
-                            <span className="opacity-100">
+                            <span className="opacity-100 text-white">
                                 Co-Founder & CEO
                             </span>
                         </div>
                     </div>
                     <p
-                        className="text-lg text-dark opacity-100"
+                        className="text-lg text-dark opacity-100 text-white"
                         style={{ marginBottom: '80px' }}
                     >
                         Since 2015 we help banks, fintechs and insurance
@@ -43,7 +43,7 @@ const Side = ({ children, content, ...rest }: SideProps) => {
                         intelligence, data and cloud.
                     </p>
                 </div>
-                <span className="text-dark">
+                <span className="text-dark text-white">
                     Copyright &copy; {`${new Date().getFullYear()}`}{' '}
                     <span className="font-semibold">{`${APP_NAME}`}</span>{' '}
                 </span>

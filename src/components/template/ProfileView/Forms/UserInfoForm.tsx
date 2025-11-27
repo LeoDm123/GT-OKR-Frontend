@@ -51,7 +51,7 @@ const UserInfoForm = () => {
                 <Button
                     shape="round"
                     variant="solid"
-                    style={{ backgroundColor: '#152e4d' }}
+                    style={{ backgroundColor: '#241a43' }}
                 >
                     Guardar Datos
                 </Button>
