@@ -21,7 +21,7 @@ export interface DateTableProps extends CommonProps, MonthBaseProps {
     onDayKeyDown: (
         monthIndex: number,
         payload: DayKeydownPayload,
-        event: React.KeyboardEvent<HTMLButtonElement>
+        event: React.KeyboardEvent<HTMLButtonElement>,
     ) => void
     labelFormat?: { month: string; year: string }
     weekdayLabelFormat?: string
@@ -97,16 +97,17 @@ const DateTable = (props: DateTableProps) => {
                         }
                         className={className}
                         renderCenter={dateViewCount > 1}
+                        preventFocus={preventFocus}
                         onNext={() =>
                             onMonthChange(
-                                dayjs(month).add(paginateBy, 'months').toDate()
+                                dayjs(month).add(paginateBy, 'months').toDate(),
                             )
                         }
                         onPrevious={() =>
                             onMonthChange(
                                 dayjs(month)
                                     .subtract(paginateBy, 'months')
-                                    .toDate()
+                                    .toDate(),
                             )
                         }
                     >
@@ -116,9 +117,10 @@ const DateTable = (props: DateTableProps) => {
                                 disabled={!enableHeaderLabel}
                                 tabIndex={index > 0 ? -1 : 0}
                                 onClick={() => onNextLevel('month')}
-                                onMouseDown={(event) =>
+                                onMouseDown={(event) => {
+                                    event.stopPropagation()
                                     preventFocus && event.preventDefault()
-                                }
+                                }}
                                 type="button"
                             >
                                 {formatMonthLabel({
@@ -132,9 +134,10 @@ const DateTable = (props: DateTableProps) => {
                                 disabled={!enableHeaderLabel}
                                 tabIndex={index > 0 ? -1 : 0}
                                 onClick={() => onNextLevel('year')}
-                                onMouseDown={(event) =>
+                                onMouseDown={(event) => {
+                                    event.stopPropagation()
                                     preventFocus && event.preventDefault()
-                                }
+                                }}
                                 type="button"
                             >
                                 {formatMonthLabel({

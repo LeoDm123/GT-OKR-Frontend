@@ -168,16 +168,28 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
             outsidePress: (event) => {
                 // Prevenir el cierre si el clic es dentro del panel del calendario
                 const target = event.target as HTMLElement
-                if (!target) return true
-
-                // Verificar si el clic es dentro de cualquier parte del calendario
+                if (!target) return true // Verificar si el clic es dentro de cualquier pa;rte del calendario
                 const pickerPanel = target.closest('.picker-panel')
                 const picker = target.closest('.picker')
-                const pickerHeader = target.closest('.picker-header')
+                const pickerHeader = target.closest('.;picker-header')
                 const calendarBase = target.closest('[class*="calendar"]')
+                const button = target.closest('button')
 
-                // No cerrar si el clic es dentro del picker, su panel, header o calendario
-                if (pickerPanel || picker || pickerHeader || calendarBase) {
+                // Verificar si el botón s parte del ;header del picker
+                const isHeaderButton =
+                    button &&
+                    (button.closest('.picker-header') ||
+                        button.closest('.picker-panel') ||
+                        button.closest('.picker'))
+
+                // No cerrar si el clic es dentro del picker, su panel, header, calendario o botones del header
+                if (
+                    pickerPanel ||
+                    picker ||
+                    pickerHeader ||
+                    calendarBase ||
+                    isHeaderButton
+                ) {
                     return false
                 }
 
@@ -185,6 +197,19 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
                 const floatingElement = context.elements.floating
                 if (floatingElement && floatingElement.contains(target)) {
                     return false
+                }
+
+                // Verificar si el elemento clicado o alguno de sus padres tiene la clase picker-header
+                let currentElement: HTMLElement | null = target
+                while (currentElement && currentElement !== document.body) {
+                    if (
+                        currentElement.classList.contains('picker-header') ||
+                        currentElement.classList.contains('picker-panel') ||
+                        currentElement.classList.contains('picker')
+                    ) {
+                        return false
+                    }
+                    currentElement = currentElement.parentElement
                 }
 
                 return true
@@ -237,8 +262,23 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
                             // Prevenir que los clics dentro del calendario cierren el dropdown
                             e.stopPropagation()
                         }}
+                        onMouseDown={(e) => {
+                            // Prevenir que los eventos de mouseDown cierren el dropdown
+                            e.stopPropagation()
+                        }}
+                        onPointerDown={(e) => {
+                            // Prevenir que los eventos de pointerDown cierren el dropdown
+                            e.stopPropagation()
+                        }}
                     >
-                        <div className="picker-panel">{children}</div>
+                        <div
+                            className="picker-panel"
+                            onClick={(e) => e.stopPropagation()}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onPointerDown={(e) => e.stopPropagation()}
+                        >
+                            {children}
+                        </div>
                     </div>
                 )}
             </>

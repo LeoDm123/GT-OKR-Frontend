@@ -43,8 +43,17 @@ const Header = (props: HeaderProps) => {
             disabled={nextLevelDisabled}
             tabIndex={preventLevelFocus ? -1 : 0}
             type="button"
-            onClick={onNextLevel}
-            onMouseDown={(event) => preventFocus && event.preventDefault()}
+            onClick={(e) => {
+                e.stopPropagation()
+                onNextLevel?.()
+            }}
+            onMouseDown={(event) => {
+                event.stopPropagation()
+                preventFocus && event.preventDefault()
+            }}
+            onPointerDown={(e) => {
+                e.stopPropagation()
+            }}
         >
             {label}
         </button>
@@ -58,6 +67,9 @@ const Header = (props: HeaderProps) => {
                 'picker-header flex items-center justify-between mb-2',
                 className,
             )}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
             {...rest}
         >
             {!renderCenter && renderChildren}
