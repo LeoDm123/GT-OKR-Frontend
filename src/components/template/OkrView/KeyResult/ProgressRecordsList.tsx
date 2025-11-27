@@ -122,14 +122,14 @@ const ProgressRecordsList = ({
                                     {unit ? ` ${unit}` : ''}
                                 </span>
                                 <span className="text-gray-600 dark:text-gray-400 w-28 flex-shrink-0">
-                                    {date.format('DD-MM-YYYY')}
+                                    {date.format('DD/MM/YYYY')}
                                 </span>
                                 <span className="text-gray-600 dark:text-gray-400 flex-1 min-w-0 truncate">
                                     {record.comment || '-'}
                                 </span>
                                 {createdAt && (
                                     <span className="text-xs text-gray-400 dark:text-gray-500 w-32 flex-shrink-0 text-right">
-                                        {createdAt.format('DD-MM-YYYY HH:mm')}
+                                        {createdAt.format('DD/MM/YY HH:mm')}
                                     </span>
                                 )}
                                 <div className="w-20 flex-shrink-0 flex justify-center">
