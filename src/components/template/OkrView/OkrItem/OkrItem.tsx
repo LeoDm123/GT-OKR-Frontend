@@ -186,11 +186,10 @@ const OkrItem = ({
         if (!date) return 'N/A'
         try {
             const dateObj = new Date(date)
-            return dateObj.toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-            })
+            const day = dateObj.getDate().toString().padStart(2, '0')
+            const month = (dateObj.getMonth() + 1).toString().padStart(2, '0')
+            const year = dateObj.getFullYear()
+            return `${day}-${month}-${year}`
         } catch {
             return 'N/A'
         }
