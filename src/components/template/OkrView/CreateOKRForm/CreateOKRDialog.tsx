@@ -23,6 +23,7 @@ const CreateOKRDialog = ({
     return (
         <Dialog
             isOpen={isOpen}
+            onClose={onClose}
             closable={true}
             width="100vw"
             height="100vh"
@@ -36,7 +37,6 @@ const CreateOKRDialog = ({
                     position: 'fixed',
                 },
             }}
-            onClose={onClose}
         >
             <div className="flex-1 flex flex-col h-full overflow-hidden">
                 <h3 className="text-xl font-semibold mb-4 px-6 pt-6">

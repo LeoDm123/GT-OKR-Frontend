@@ -253,8 +253,8 @@ const BasePicker = forwardRef<HTMLInputElement, BasePickerProps>(
                 />
                 {dropdownOpened && (
                     <div
-                        ref={refs.setFloating}
                         className="picker"
+                        ref={refs.setFloating}
                         style={floatingStyles}
                         aria-labelledby={headingId}
                         {...getFloatingProps()}
