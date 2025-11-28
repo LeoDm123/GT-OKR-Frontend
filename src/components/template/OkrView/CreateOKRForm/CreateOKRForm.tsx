@@ -318,14 +318,19 @@ const CreateOKRForm = ({
                         // eslint-disable-next-line react-hooks/exhaustive-deps
                     }, [values.period, values.year])
 
-                                    <div className="grid grid-cols-2 gap-4">
+                    return (
+                        <Form className="flex-1 flex flex-col overflow-hidden">
+                            <div className="flex-1 flex overflow-hidden px-6 pb-6">
+                                {/* Columna izquierda: Formulario del OKR */}
+                                <div className="w-1/2 pr-4 flex flex-col ">
+                                    <FormContainer>
                                         <FormItem
-                                            label="Período *"
+                                            label="Título *"
                                             invalid={
-                                                (errors.period &&
-                                                    touched.period) as boolean
+                                                (errors.title &&
+                                                    touched.title) as boolean
                                             }
-                                            errorMessage={errors.period}
+                                            errorMessage={errors.title}
                                             className="mb-4"
                                         >
                                             <Field
@@ -338,24 +343,21 @@ const CreateOKRForm = ({
                                         </FormItem>
 
                                         <FormItem
-                                            label="Año *"
+                                            label="Descripción"
                                             invalid={
-                                                (errors.year &&
-                                                    touched.year) as boolean
+                                                (errors.description &&
+                                                    touched.description) as boolean
                                             }
-                                            errorMessage={errors.year}
+                                            errorMessage={errors.description}
                                             className="mb-4"
                                         >
                                             <Field
-                                                type="number"
-                                                name="year"
-                                                placeholder="2024"
+                                                type="text"
+                                                name="description"
+                                                placeholder="Descripción del OKR"
                                                 component={Input}
-                                                min={2020}
-                                                max={2100}
                                             />
                                         </FormItem>
-                                    </div>
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <FormItem
@@ -517,400 +519,576 @@ const CreateOKRForm = ({
                                                 />
                                             </FormItem>
 
-                            {/* Divider vertical */}
-                            <div className="w-px bg-gray-200 dark:bg-gray-700 mx-4"></div>
+                                            <FormItem
+                                                label="Fecha de fin *"
+                                                invalid={
+                                                    (errors.endDate &&
+                                                        touched.endDate) as boolean
+                                                }
+                                                errorMessage={errors.endDate}
+                                                className="mb-4"
+                                            >
+                                                <DatePicker
+                                                    inputtable
+                                                    placeholder="Seleccionar fecha"
+                                                    value={values.endDate}
+                                                    onChange={(date) => {
+                                                        setFieldValue(
+                                                            'endDate',
+                                                            date,
+                                                        )
+                                                    }}
+                                                    minDate={
+                                                        values.startDate ||
+                                                        undefined
+                                                    }
+                                                />
+                                            </FormItem>
+                                        </div>
 
-                            {/* Columna derecha: Key Results */}
-                            <div className="w-1/2 pl-4 flex flex-col overflow-hidden">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                                        Key Results
-                                    </h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <FormItem
+                                                label="Categoría"
+                                                invalid={
+                                                    (errors.category &&
+                                                        touched.category) as boolean
+                                                }
+                                                errorMessage={errors.category}
+                                                className="mb-4"
+                                            >
+                                                <Select
+                                                    options={categoryOptions}
+                                                    value={categoryOptions.find(
+                                                        (opt) =>
+                                                            opt.value ===
+                                                            values.category,
+                                                    )}
+                                                    onChange={(option) => {
+                                                        setFieldValue(
+                                                            'category',
+                                                            option?.value || '',
+                                                        )
+                                                    }}
+                                                    isClearable={true}
+                                                    placeholder="Seleccionar categoría"
+                                                    menuPortalTarget={
+                                                        document.body
+                                                    }
+                                                    maxMenuHeight={300}
+                                                    menuShouldScrollIntoView={
+                                                        true
+                                                    }
+                                                    styles={{
+                                                        control: (
+                                                            provided,
+                                                        ) => ({
+                                                            ...provided,
+                                                            minHeight: '43.7px',
+                                                            height: '43.7px',
+                                                        }),
+                                                        valueContainer: (
+                                                            provided,
+                                                        ) => ({
+                                                            ...provided,
+                                                            height: '40px',
+                                                            padding: '0 8px',
+                                                        }),
+                                                        input: (provided) => ({
+                                                            ...provided,
+                                                            margin: '0px',
+                                                        }),
+                                                        indicatorsContainer: (
+                                                            provided,
+                                                        ) => ({
+                                                            ...provided,
+                                                            height: '40px',
+                                                        }),
+                                                        menuPortal: (base) => ({
+                                                            ...base,
+                                                            zIndex: 9999,
+                                                        }),
+                                                        menu: (base) => ({
+                                                            ...base,
+                                                            zIndex: 9999,
+                                                        }),
+                                                        menuList: (base) => ({
+                                                            ...base,
+                                                            maxHeight: 300,
+                                                            overflowY: 'auto',
+                                                        }),
+                                                    }}
+                                                />
+                                            </FormItem>
+
+                                            <FormItem
+                                                label="Visibilidad *"
+                                                invalid={
+                                                    (errors.visibility &&
+                                                        touched.visibility) as boolean
+                                                }
+                                                errorMessage={errors.visibility}
+                                                className="mb-4"
+                                            >
+                                                <Select
+                                                    options={visibilityOptions}
+                                                    value={visibilityOptions.find(
+                                                        (opt) =>
+                                                            opt.value ===
+                                                            values.visibility,
+                                                    )}
+                                                    onChange={(option) => {
+                                                        setFieldValue(
+                                                            'visibility',
+                                                            option?.value,
+                                                        )
+                                                    }}
+                                                    isClearable={false}
+                                                    menuPortalTarget={
+                                                        document.body
+                                                    }
+                                                    maxMenuHeight={300}
+                                                    menuShouldScrollIntoView={
+                                                        true
+                                                    }
+                                                    styles={{
+                                                        control: (
+                                                            provided,
+                                                        ) => ({
+                                                            ...provided,
+                                                            minHeight: '43.7px',
+                                                            height: '43.7px',
+                                                        }),
+                                                        valueContainer: (
+                                                            provided,
+                                                        ) => ({
+                                                            ...provided,
+                                                            height: '40px',
+                                                            padding: '0 8px',
+                                                        }),
+                                                        input: (provided) => ({
+                                                            ...provided,
+                                                            margin: '0px',
+                                                        }),
+                                                        indicatorsContainer: (
+                                                            provided,
+                                                        ) => ({
+                                                            ...provided,
+                                                            height: '40px',
+                                                        }),
+                                                        menuPortal: (base) => ({
+                                                            ...base,
+                                                            zIndex: 9999,
+                                                        }),
+                                                        menu: (base) => ({
+                                                            ...base,
+                                                            zIndex: 9999,
+                                                        }),
+                                                        menuList: (base) => ({
+                                                            ...base,
+                                                            maxHeight: 300,
+                                                            overflowY: 'auto',
+                                                        }),
+                                                    }}
+                                                />
+                                            </FormItem>
+                                        </div>
+                                    </FormContainer>
                                 </div>
-                                <div className="flex-1 overflow-y-auto pr-2">
+
+                                {/* Divider vertical */}
+                                <div className="w-px bg-gray-200 dark:bg-gray-700 mx-4"></div>
+
+                                {/* Columna derecha: Key Results */}
+                                <div className="w-1/2 pl-4 flex flex-col overflow-hidden">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                            Key Results
+                                        </h4>
+                                    </div>
                                     <FieldArray name="keyResults">
                                         {({ push, remove }) => (
-                                            <div className="space-y-4 pb-4">
-                                                {values.keyResults.map(
-                                                    (kr, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
-                                                        >
-                                                            <div className="flex items-center justify-between mb-3">
-                                                                <h5 className="font-medium text-sm">
-                                                                    Key Result{' '}
-                                                                    {index + 1}
-                                                                </h5>
-                                                                <Button
-                                                                    type="button"
-                                                                    size="sm"
-                                                                    variant="plain"
-                                                                    icon={
-                                                                        <HiX />
-                                                                    }
-                                                                    onClick={() =>
-                                                                        remove(
-                                                                            index,
-                                                                        )
-                                                                    }
-                                                                />
-                                                            </div>
-                                                            <div className="space-y-3">
-                                                                <FormItem
-                                                                    label="Título *"
-                                                                    invalid={
-                                                                        (errors.keyResults &&
-                                                                            errors
-                                                                                .keyResults[
-                                                                                index
-                                                                            ] &&
-                                                                            (
-                                                                                errors
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] as any
-                                                                            )
-                                                                                ?.title &&
-                                                                            touched.keyResults &&
-                                                                            touched
-                                                                                .keyResults[
-                                                                                index
-                                                                            ] &&
-                                                                            (
-                                                                                touched
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] as any
-                                                                            )
-                                                                                ?.title) as boolean
-                                                                    }
-                                                                    errorMessage={
-                                                                        (errors.keyResults &&
-                                                                            errors
-                                                                                .keyResults[
-                                                                                index
-                                                                            ] &&
-                                                                            (
-                                                                                errors
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] as any
-                                                                            )
-                                                                                ?.title) as string
-                                                                    }
+                                            <>
+                                                <div className="flex-1 overflow-y-auto pr-2">
+                                                    <div className="space-y-4 pb-4">
+                                                        {values.keyResults.map(
+                                                            (kr, index) => (
+                                                                <div
+                                                                    key={index}
+                                                                    className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
                                                                 >
-                                                                    <Field
-                                                                        type="text"
-                                                                        name={`keyResults.${index}.title`}
-                                                                        placeholder="Ej: Cerrar 10 nuevos clientes"
-                                                                        component={
-                                                                            Input
-                                                                        }
-                                                                    />
-                                                                </FormItem>
-
-                                                                <FormItem
-                                                                    label="Descripción"
-                                                                    invalid={
-                                                                        (errors.keyResults &&
-                                                                            errors
-                                                                                .keyResults[
-                                                                                index
-                                                                            ] &&
-                                                                            (
-                                                                                errors
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] as any
-                                                                            )
-                                                                                ?.description &&
-                                                                            touched.keyResults &&
-                                                                            touched
-                                                                                .keyResults[
-                                                                                index
-                                                                            ] &&
-                                                                            (
-                                                                                touched
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] as any
-                                                                            )
-                                                                                ?.description) as boolean
-                                                                    }
-                                                                    errorMessage={
-                                                                        (errors.keyResults &&
-                                                                            errors
-                                                                                .keyResults[
-                                                                                index
-                                                                            ] &&
-                                                                            (
-                                                                                errors
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] as any
-                                                                            )
-                                                                                ?.description) as string
-                                                                    }
-                                                                >
-                                                                    <Field
-                                                                        type="text"
-                                                                        name={`keyResults.${index}.description`}
-                                                                        placeholder="Descripción del Key Result"
-                                                                        component={
-                                                                            Input
-                                                                        }
-                                                                    />
-                                                                </FormItem>
-
-                                                                <div className="grid grid-cols-2 gap-3">
-                                                                    <FormItem
-                                                                        label="Valor objetivo *"
-                                                                        invalid={
-                                                                            (errors.keyResults &&
-                                                                                errors
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] &&
-                                                                                (
+                                                                    <div className="flex items-center justify-between mb-3">
+                                                                        <h5 className="font-medium text-sm">
+                                                                            Key
+                                                                            Result{' '}
+                                                                            {index +
+                                                                                1}
+                                                                        </h5>
+                                                                        <Button
+                                                                            type="button"
+                                                                            size="sm"
+                                                                            variant="plain"
+                                                                            icon={
+                                                                                <HiX />
+                                                                            }
+                                                                            onClick={() =>
+                                                                                remove(
+                                                                                    index,
+                                                                                )
+                                                                            }
+                                                                        />
+                                                                    </div>
+                                                                    <div className="space-y-3">
+                                                                        <FormItem
+                                                                            label="Título *"
+                                                                            invalid={
+                                                                                (errors.keyResults &&
                                                                                     errors
                                                                                         .keyResults[
                                                                                         index
-                                                                                    ] as any
-                                                                                )
-                                                                                    ?.targetValue &&
-                                                                                touched.keyResults &&
-                                                                                touched
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] &&
-                                                                                (
+                                                                                    ] &&
+                                                                                    (
+                                                                                        errors
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] as any
+                                                                                    )
+                                                                                        ?.title &&
+                                                                                    touched.keyResults &&
                                                                                     touched
                                                                                         .keyResults[
                                                                                         index
-                                                                                    ] as any
-                                                                                )
-                                                                                    ?.targetValue) as boolean
-                                                                        }
-                                                                        errorMessage={
-                                                                            (errors.keyResults &&
-                                                                                errors
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] &&
-                                                                                (
+                                                                                    ] &&
+                                                                                    (
+                                                                                        touched
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] as any
+                                                                                    )
+                                                                                        ?.title) as boolean
+                                                                            }
+                                                                            errorMessage={
+                                                                                (errors.keyResults &&
                                                                                     errors
                                                                                         .keyResults[
                                                                                         index
-                                                                                    ] as any
-                                                                                )
-                                                                                    ?.targetValue) as string
-                                                                        }
-                                                                        className="mb-4"
-                                                                    >
-                                                                        <Field
-                                                                            type="number"
-                                                                            name={`keyResults.${index}.targetValue`}
-                                                                            placeholder="0"
-                                                                            component={
-                                                                                Input
+                                                                                    ] &&
+                                                                                    (
+                                                                                        errors
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] as any
+                                                                                    )
+                                                                                        ?.title) as string
                                                                             }
-                                                                            min={
-                                                                                0
-                                                                            }
-                                                                            step="any"
-                                                                        />
-                                                                    </FormItem>
+                                                                        >
+                                                                            <Field
+                                                                                type="text"
+                                                                                name={`keyResults.${index}.title`}
+                                                                                placeholder="Ej: Cerrar 10 nuevos clientes"
+                                                                                component={
+                                                                                    Input
+                                                                                }
+                                                                            />
+                                                                        </FormItem>
 
-                                                                    <FormItem
-                                                                        label="Unidad"
-                                                                        invalid={
-                                                                            (errors.keyResults &&
-                                                                                errors
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] &&
-                                                                                (
+                                                                        <FormItem
+                                                                            label="Descripción"
+                                                                            invalid={
+                                                                                (errors.keyResults &&
                                                                                     errors
                                                                                         .keyResults[
                                                                                         index
-                                                                                    ] as any
-                                                                                )
-                                                                                    ?.unit &&
-                                                                                touched.keyResults &&
-                                                                                touched
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] &&
-                                                                                (
+                                                                                    ] &&
+                                                                                    (
+                                                                                        errors
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] as any
+                                                                                    )
+                                                                                        ?.description &&
+                                                                                    touched.keyResults &&
                                                                                     touched
                                                                                         .keyResults[
                                                                                         index
-                                                                                    ] as any
-                                                                                )
-                                                                                    ?.unit) as boolean
-                                                                        }
-                                                                        errorMessage={
-                                                                            (errors.keyResults &&
-                                                                                errors
-                                                                                    .keyResults[
-                                                                                    index
-                                                                                ] &&
-                                                                                (
+                                                                                    ] &&
+                                                                                    (
+                                                                                        touched
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] as any
+                                                                                    )
+                                                                                        ?.description) as boolean
+                                                                            }
+                                                                            errorMessage={
+                                                                                (errors.keyResults &&
                                                                                     errors
                                                                                         .keyResults[
                                                                                         index
-                                                                                    ] as any
-                                                                                )
-                                                                                    ?.unit) as string
-                                                                        }
-                                                                        className="mb-4"
-                                                                    >
-                                                                        <Select
-                                                                            options={
-                                                                                unitOptions
-                                                                            }
-                                                                            value={unitOptions.find(
-                                                                                (
-                                                                                    opt,
-                                                                                ) =>
-                                                                                    opt.value ===
-                                                                                    (values
-                                                                                        .keyResults[
-                                                                                        index
-                                                                                    ]
-                                                                                        ?.unit ??
-                                                                                        ''),
-                                                                            )}
-                                                                            isClearable={
-                                                                                false
-                                                                            }
-                                                                            placeholder="Seleccionar unidad"
-                                                                            menuPortalTarget={
-                                                                                document.body
-                                                                            }
-                                                                            maxMenuHeight={
-                                                                                300
-                                                                            }
-                                                                            menuShouldScrollIntoView={
-                                                                                true
-                                                                            }
-                                                                            styles={{
-                                                                                control:
+                                                                                    ] &&
                                                                                     (
-                                                                                        provided,
-                                                                                        state,
-                                                                                    ) => ({
-                                                                                        ...provided,
-                                                                                        minHeight:
-                                                                                            '43.7px', // Altura estándar para inputs
-                                                                                        height: '43.7px',
-                                                                                    }),
-                                                                                valueContainer:
-                                                                                    (
-                                                                                        provided,
-                                                                                    ) => ({
-                                                                                        ...provided,
-                                                                                        height: '40px',
-                                                                                        padding:
-                                                                                            '0 8px',
-                                                                                    }),
-                                                                                input: (
-                                                                                    provided,
-                                                                                ) => ({
-                                                                                    ...provided,
-                                                                                    margin: '0px',
-                                                                                }),
-                                                                                indicatorsContainer:
-                                                                                    (
-                                                                                        provided,
-                                                                                    ) => ({
-                                                                                        ...provided,
-                                                                                        height: '40px',
-                                                                                    }),
-                                                                                menuPortal:
-                                                                                    (
-                                                                                        base,
-                                                                                    ) => ({
-                                                                                        ...base,
-                                                                                        zIndex: 9999,
-                                                                                    }),
-                                                                                menu: (
-                                                                                    base,
-                                                                                ) => ({
-                                                                                    ...base,
-                                                                                    zIndex: 9999,
-                                                                                }),
-                                                                                menuList:
-                                                                                    (
-                                                                                        base,
-                                                                                    ) => ({
-                                                                                        ...base,
-                                                                                        maxHeight: 300,
-                                                                                        overflowY:
-                                                                                            'auto',
-                                                                                    }),
-                                                                            }}
-                                                                        />
-                                                                    </FormItem>
+                                                                                        errors
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] as any
+                                                                                    )
+                                                                                        ?.description) as string
+                                                                            }
+                                                                        >
+                                                                            <Field
+                                                                                type="text"
+                                                                                name={`keyResults.${index}.description`}
+                                                                                placeholder="Descripción del Key Result"
+                                                                                component={
+                                                                                    Input
+                                                                                }
+                                                                            />
+                                                                        </FormItem>
+
+                                                                        <div className="grid grid-cols-2 gap-3">
+                                                                            <FormItem
+                                                                                label="Valor objetivo *"
+                                                                                invalid={
+                                                                                    (errors.keyResults &&
+                                                                                        errors
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] &&
+                                                                                        (
+                                                                                            errors
+                                                                                                .keyResults[
+                                                                                                index
+                                                                                            ] as any
+                                                                                        )
+                                                                                            ?.targetValue &&
+                                                                                        touched.keyResults &&
+                                                                                        touched
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] &&
+                                                                                        (
+                                                                                            touched
+                                                                                                .keyResults[
+                                                                                                index
+                                                                                            ] as any
+                                                                                        )
+                                                                                            ?.targetValue) as boolean
+                                                                                }
+                                                                                errorMessage={
+                                                                                    (errors.keyResults &&
+                                                                                        errors
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] &&
+                                                                                        (
+                                                                                            errors
+                                                                                                .keyResults[
+                                                                                                index
+                                                                                            ] as any
+                                                                                        )
+                                                                                            ?.targetValue) as string
+                                                                                }
+                                                                                className="mb-4"
+                                                                            >
+                                                                                <Field
+                                                                                    type="number"
+                                                                                    name={`keyResults.${index}.targetValue`}
+                                                                                    placeholder="0"
+                                                                                    component={
+                                                                                        Input
+                                                                                    }
+                                                                                    min={
+                                                                                        0
+                                                                                    }
+                                                                                    step="any"
+                                                                                />
+                                                                            </FormItem>
+
+                                                                            <FormItem
+                                                                                label="Unidad"
+                                                                                invalid={
+                                                                                    (errors.keyResults &&
+                                                                                        errors
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] &&
+                                                                                        (
+                                                                                            errors
+                                                                                                .keyResults[
+                                                                                                index
+                                                                                            ] as any
+                                                                                        )
+                                                                                            ?.unit &&
+                                                                                        touched.keyResults &&
+                                                                                        touched
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] &&
+                                                                                        (
+                                                                                            touched
+                                                                                                .keyResults[
+                                                                                                index
+                                                                                            ] as any
+                                                                                        )
+                                                                                            ?.unit) as boolean
+                                                                                }
+                                                                                errorMessage={
+                                                                                    (errors.keyResults &&
+                                                                                        errors
+                                                                                            .keyResults[
+                                                                                            index
+                                                                                        ] &&
+                                                                                        (
+                                                                                            errors
+                                                                                                .keyResults[
+                                                                                                index
+                                                                                            ] as any
+                                                                                        )
+                                                                                            ?.unit) as string
+                                                                                }
+                                                                                className="mb-4"
+                                                                            >
+                                                                                <Select
+                                                                                    options={
+                                                                                        unitOptions
+                                                                                    }
+                                                                                    value={unitOptions.find(
+                                                                                        (
+                                                                                            opt,
+                                                                                        ) =>
+                                                                                            opt.value ===
+                                                                                            (values
+                                                                                                .keyResults[
+                                                                                                index
+                                                                                            ]
+                                                                                                ?.unit ??
+                                                                                                ''),
+                                                                                    )}
+                                                                                    isClearable={
+                                                                                        false
+                                                                                    }
+                                                                                    placeholder="Seleccionar unidad"
+                                                                                    menuPortalTarget={
+                                                                                        document.body
+                                                                                    }
+                                                                                    maxMenuHeight={
+                                                                                        300
+                                                                                    }
+                                                                                    menuShouldScrollIntoView={
+                                                                                        true
+                                                                                    }
+                                                                                    styles={{
+                                                                                        control:
+                                                                                            (
+                                                                                                provided,
+                                                                                                state,
+                                                                                            ) => ({
+                                                                                                ...provided,
+                                                                                                minHeight:
+                                                                                                    '43.7px', // Altura estándar para inputs
+                                                                                                height: '43.7px',
+                                                                                            }),
+                                                                                        valueContainer:
+                                                                                            (
+                                                                                                provided,
+                                                                                            ) => ({
+                                                                                                ...provided,
+                                                                                                height: '40px',
+                                                                                                padding:
+                                                                                                    '0 8px',
+                                                                                            }),
+                                                                                        input: (
+                                                                                            provided,
+                                                                                        ) => ({
+                                                                                            ...provided,
+                                                                                            margin: '0px',
+                                                                                        }),
+                                                                                        indicatorsContainer:
+                                                                                            (
+                                                                                                provided,
+                                                                                            ) => ({
+                                                                                                ...provided,
+                                                                                                height: '40px',
+                                                                                            }),
+                                                                                        menuPortal:
+                                                                                            (
+                                                                                                base,
+                                                                                            ) => ({
+                                                                                                ...base,
+                                                                                                zIndex: 9999,
+                                                                                            }),
+                                                                                        menu: (
+                                                                                            base,
+                                                                                        ) => ({
+                                                                                            ...base,
+                                                                                            zIndex: 9999,
+                                                                                        }),
+                                                                                        menuList:
+                                                                                            (
+                                                                                                base,
+                                                                                            ) => ({
+                                                                                                ...base,
+                                                                                                maxHeight: 300,
+                                                                                                overflowY:
+                                                                                                    'auto',
+                                                                                            }),
+                                                                                    }}
+                                                                                />
+                                                                            </FormItem>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        ),
-                                                    )}
+                                                            ),
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            )}
-                                        </FieldArray>
-                                    </div>
-                                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                                        <FieldArray name="keyResults">
-                                            {({ push }) => (
-                                                <Button
-                                                    type="button"
-                                                    variant="plain"
-                                                    size="sm"
-                                                    icon={<HiPlus />}
-                                                    onClick={() =>
-                                                        push({
-                                                            title: '',
-                                                            description: '',
-                                                            targetValue: 0,
-                                                            unit: '',
-                                                            owners: [],
-                                                        })
-                                                    }
-                                                >
-                                                    Agregar Key Result
-                                                </Button>
-                                            )}
-                                        </FieldArray>
-                                    </div>
+                                                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                                    <Button
+                                                        type="button"
+                                                        variant="plain"
+                                                        size="sm"
+                                                        icon={<HiPlus />}
+                                                        onClick={() =>
+                                                            push({
+                                                                title: '',
+                                                                description: '',
+                                                                targetValue: 0,
+                                                                unit: '',
+                                                                owners: [],
+                                                            })
+                                                        }
+                                                    >
+                                                        Agregar Key Result
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    </FieldArray>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Footer con botones */}
-                        <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                            {onCancel && (
+                            {/* Footer con botones */}
+                            <div className="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                                {onCancel && (
+                                    <Button
+                                        type="button"
+                                        variant="plain"
+                                        onClick={onCancel}
+                                    >
+                                        Cancelar
+                                    </Button>
+                                )}
                                 <Button
                                     type="submit"
                                     variant="solid"
                                     loading={isSubmitting}
                                     disabled={isSubmitting}
                                 >
-                                    Cancelar
+                                    Crear OKR
                                 </Button>
-                            )}
-                            <Button
-                                type="submit"
-                                variant="solid"
-                                loading={isSubmitting}
-                                disabled={isSubmitting}
-                            >
-                                Crear OKR
-                            </Button>
-                        </div>
-                    </Form>
-                )}
+                            </div>
+                        </Form>
+                    )
+                }}
             </Formik>
         </div>
     )
