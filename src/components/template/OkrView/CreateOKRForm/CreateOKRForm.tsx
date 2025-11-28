@@ -8,7 +8,6 @@ import Spinner from '@/components/ui/Spinner'
 import { Field, Form, Formik, FieldArray } from 'formik'
 import * as Yup from 'yup'
 import { useMemo, useEffect } from 'react'
-import dayjs from 'dayjs'
 import { createOKR } from '@/api/api'
 import { HiX, HiPlus } from 'react-icons/hi'
 import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
@@ -124,8 +123,8 @@ const unitOptions = [
     { value: 'personas', label: 'Personas' },
 ]
 
-// Función para calcular las fechas de inicio y fin según el período
-const getPeriodDates = (
+// Función para calcular las fechas según el período y año
+const calculatePeriodDates = (
     period: 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'annual' | 'custom',
     year: number,
 ): { startDate: Date | null; endDate: Date | null } => {
@@ -138,24 +137,24 @@ const getPeriodDates = (
 
     switch (period) {
         case 'Q1':
-            startDate = dayjs(`${year}-01-01`).toDate()
-            endDate = dayjs(`${year}-03-31`).toDate()
+            startDate = new Date(year, 0, 1) // 1 de enero
+            endDate = new Date(year, 2, 31) // 31 de marzo
             break
         case 'Q2':
-            startDate = dayjs(`${year}-04-01`).toDate()
-            endDate = dayjs(`${year}-06-30`).toDate()
+            startDate = new Date(year, 3, 1) // 1 de abril
+            endDate = new Date(year, 5, 30) // 30 de junio
             break
         case 'Q3':
-            startDate = dayjs(`${year}-07-01`).toDate()
-            endDate = dayjs(`${year}-09-30`).toDate()
+            startDate = new Date(year, 6, 1) // 1 de julio
+            endDate = new Date(year, 8, 30) // 30 de septiembre
             break
         case 'Q4':
-            startDate = dayjs(`${year}-10-01`).toDate()
-            endDate = dayjs(`${year}-12-31`).toDate()
+            startDate = new Date(year, 9, 1) // 1 de octubre
+            endDate = new Date(year, 11, 31) // 31 de diciembre
             break
         case 'annual':
-            startDate = dayjs(`${year}-01-01`).toDate()
-            endDate = dayjs(`${year}-12-31`).toDate()
+            startDate = new Date(year, 0, 1) // 1 de enero
+            endDate = new Date(year, 11, 31) // 31 de diciembre
             break
         default:
             return { startDate: null, endDate: null }
@@ -202,8 +201,8 @@ const CreateOKRForm = ({
         return options
     }, [users])
 
-    // Calcular fechas iniciales para Q1 del año actual
-    const initialDates = getPeriodDates('Q1', currentYear)
+    // Calcular fechas iniciales para Q1
+    const initialDates = calculatePeriodDates('Q1', currentYear)
 
     const initialValues: CreateOKRFormValues = {
         title: '',
@@ -278,31 +277,45 @@ const CreateOKRForm = ({
                 onSubmit={handleSubmit}
             >
                 {({ touched, errors, values, isSubmitting, setFieldValue }) => {
-                    // Efecto para actualizar fechas cuando cambien el período o el año
+                    // Efecto para actualizar fechas automáticamente cuando cambien el período o el año
                     useEffect(() => {
+                        // Solo actualizar si el período no es 'custom'
                         if (
                             values.period &&
                             values.period !== 'custom' &&
                             values.year
                         ) {
-                            const { startDate, endDate } = getPeriodDates(
+                            const dates = calculatePeriodDates(
                                 values.period,
                                 values.year,
                             )
-                            // Solo actualizar si las fechas son diferentes para evitar loops infinitos
-                            const currentStartTime = values.startDate?.getTime()
-                            const currentEndTime = values.endDate?.getTime()
-                            const newStartTime = startDate?.getTime()
-                            const newEndTime = endDate?.getTime()
-
-                            if (
-                                currentStartTime !== newStartTime ||
-                                currentEndTime !== newEndTime
-                            ) {
-                                setFieldValue('startDate', startDate, false)
-                                setFieldValue('endDate', endDate, false)
+                            if (dates.startDate && dates.endDate) {
+                                // Solo actualizar si las fechas son diferentes
+                                if (
+                                    !values.startDate ||
+                                    values.startDate.getTime() !==
+                                        dates.startDate.getTime()
+                                ) {
+                                    setFieldValue(
+                                        'startDate',
+                                        dates.startDate,
+                                        false,
+                                    )
+                                }
+                                if (
+                                    !values.endDate ||
+                                    values.endDate.getTime() !==
+                                        dates.endDate.getTime()
+                                ) {
+                                    setFieldValue(
+                                        'endDate',
+                                        dates.endDate,
+                                        false,
+                                    )
+                                }
                             }
                         }
+                        // eslint-disable-next-line react-hooks/exhaustive-deps
                     }, [values.period, values.year])
 
                     return (
@@ -366,33 +379,42 @@ const CreateOKRForm = ({
                                                     )}
                                                     onChange={(option) => {
                                                         const newPeriod =
-                                                            option?.value as CreateOKRFormValues['period']
+                                                            option?.value as
+                                                                | 'Q1'
+                                                                | 'Q2'
+                                                                | 'Q3'
+                                                                | 'Q4'
+                                                                | 'annual'
+                                                                | 'custom'
                                                         setFieldValue(
                                                             'period',
                                                             newPeriod,
                                                         )
 
-                                                        // Si el período no es "custom", actualizar las fechas automáticamente
+                                                        // Actualizar fechas automáticamente si no es custom
                                                         if (
                                                             newPeriod &&
                                                             newPeriod !==
                                                                 'custom'
                                                         ) {
-                                                            const {
-                                                                startDate,
-                                                                endDate,
-                                                            } = getPeriodDates(
-                                                                newPeriod,
-                                                                values.year,
-                                                            )
-                                                            setFieldValue(
-                                                                'startDate',
-                                                                startDate,
-                                                            )
-                                                            setFieldValue(
-                                                                'endDate',
-                                                                endDate,
-                                                            )
+                                                            const dates =
+                                                                calculatePeriodDates(
+                                                                    newPeriod,
+                                                                    values.year,
+                                                                )
+                                                            if (
+                                                                dates.startDate &&
+                                                                dates.endDate
+                                                            ) {
+                                                                setFieldValue(
+                                                                    'startDate',
+                                                                    dates.startDate,
+                                                                )
+                                                                setFieldValue(
+                                                                    'endDate',
+                                                                    dates.endDate,
+                                                                )
+                                                            }
                                                         }
                                                     }}
                                                     isClearable={false}
@@ -458,43 +480,18 @@ const CreateOKRForm = ({
                                                     type="number"
                                                     name="year"
                                                     placeholder="2024"
-                                                    value={values.year}
                                                     min={2020}
                                                     max={2100}
-                                                    onChange={(
-                                                        e: React.ChangeEvent<HTMLInputElement>,
-                                                    ) => {
+                                                    value={values.year}
+                                                    onChange={(e) => {
                                                         const newYear =
                                                             parseInt(
                                                                 e.target.value,
-                                                            ) || values.year
+                                                            ) || currentYear
                                                         setFieldValue(
                                                             'year',
                                                             newYear,
                                                         )
-
-                                                        // Si el período no es "custom", actualizar las fechas automáticamente
-                                                        if (
-                                                            values.period &&
-                                                            values.period !==
-                                                                'custom'
-                                                        ) {
-                                                            const {
-                                                                startDate,
-                                                                endDate,
-                                                            } = getPeriodDates(
-                                                                values.period,
-                                                                newYear,
-                                                            )
-                                                            setFieldValue(
-                                                                'startDate',
-                                                                startDate,
-                                                            )
-                                                            setFieldValue(
-                                                                'endDate',
-                                                                endDate,
-                                                            )
-                                                        }
                                                     }}
                                                 />
                                             </FormItem>

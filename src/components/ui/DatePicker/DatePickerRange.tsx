@@ -14,7 +14,8 @@ import type { BasePickerSharedProps } from './BasePicker'
 export type DatePickerRangeValue = [Date | null, Date | null]
 
 export interface DatePickerRangeProps
-    extends CommonProps,
+    extends
+        CommonProps,
         Omit<
             CalendarSharedProps,
             | 'onMonthChange'
@@ -94,7 +95,7 @@ const DatePickerRange = forwardRef<HTMLInputElement, DatePickerRangeProps>(
 
         const finalLocale = locale || themeLocale
 
-        const dateFormat = inputFormat || 'YYYY-MM-DD'
+        const dateFormat = inputFormat || 'DD-MM-YYYY'
 
         const [dropdownOpened, setDropdownOpened] = useState(defaultOpen)
 
@@ -123,13 +124,13 @@ const DatePickerRange = forwardRef<HTMLInputElement, DatePickerRangeProps>(
 
         const firstDateLabel = _value?.[0]
             ? capitalize(
-                  dayjs(_value[0]).locale(finalLocale).format(dateFormat)
+                  dayjs(_value[0]).locale(finalLocale).format(dateFormat),
               )
             : ''
 
         const secondDateLabel = _value?.[1]
             ? capitalize(
-                  dayjs(_value[1]).locale(finalLocale).format(dateFormat)
+                  dayjs(_value[1]).locale(finalLocale).format(dateFormat),
               )
             : ''
 
@@ -197,7 +198,7 @@ const DatePickerRange = forwardRef<HTMLInputElement, DatePickerRangeProps>(
                 />
             </BasePicker>
         )
-    }
+    },
 )
 
 DatePickerRange.displayName = 'DatePickerRange'

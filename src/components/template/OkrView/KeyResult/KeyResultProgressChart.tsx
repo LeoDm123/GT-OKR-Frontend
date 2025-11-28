@@ -58,7 +58,7 @@ const KeyResultProgressChart = ({
 
         for (let i = 0; i <= steps; i++) {
             const date = start.add((totalDays * i) / steps, 'day')
-            dateCategories.push(date.format('DD/MM/YY'))
+            dateCategories.push(date.format('DD-MM-YYYY'))
             // Progreso teórico: de 0 a targetValue de forma lineal
             let value = (targetValue * i) / steps
             // Si la unidad requiere valores enteros, redondear
@@ -91,7 +91,7 @@ const KeyResultProgressChart = ({
             let minDiff = Infinity
 
             dateCategories.forEach((catDate, index) => {
-                const catDayjs = dayjs(catDate, 'DD/MM/YY')
+                const catDayjs = dayjs(catDate, 'DD-MM-YYYY')
                 const diff = Math.abs(recordDate.diff(catDayjs, 'day'))
                 if (diff < minDiff) {
                     minDiff = diff
