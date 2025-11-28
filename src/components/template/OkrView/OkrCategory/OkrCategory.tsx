@@ -117,13 +117,13 @@ const OkrCategory = ({
             >
                 {category.objectives.length > 0 ? (
                     <div className="pl-6">
-                        <div className="grid grid-cols-4 gap-4 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-                            <div className="col-span-1">
+                        <div className="grid grid-cols-7 gap-4 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                            <div className="col-span-3 text-center">
                                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                                     Nombre
                                 </span>
                             </div>
-                            <div className="col-span-1">
+                            <div className="col-span-1 text-center">
                                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                                     Deadline
                                 </span>
@@ -133,10 +133,13 @@ const OkrCategory = ({
                                     Responsables
                                 </span>
                             </div>
-                            <div className="col-span-1">
+                            <div className="col-span-1 ml-4">
                                 <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
                                     Progress
                                 </span>
+                            </div>
+                            <div className="col-span-1">
+                                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide"></span>
                             </div>
                         </div>
                         {category.objectives.map((objective) => (

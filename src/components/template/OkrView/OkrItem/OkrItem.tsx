@@ -30,19 +30,6 @@ export interface OkrItemProps extends CommonProps {
     onUpdateSuccess?: () => void
 }
 
-const getObjectiveIcon = (objective: Objective) => {
-    switch (objective.status) {
-        case 'completed':
-            return <HiCheckCircle className="text-emerald-500 text-base" />
-        case 'at_risk':
-            return <HiExclamationCircle className="text-red-500 text-base" />
-        case 'in_progress':
-            return <HiClock className="text-blue-500 text-base" />
-        default:
-            return <HiXCircle className="text-gray-400 text-base" />
-    }
-}
-
 const getProgressColor = (progress: number): string => {
     if (progress >= 80) {
         return 'emerald-500'
@@ -200,7 +187,7 @@ const OkrItem = ({
             <div className={classNames('mb-3', className)}>
                 <div
                     className={classNames(
-                        'grid grid-cols-4 gap-4 items-center py-3 px-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded transition-colors',
+                        'grid grid-cols-7 gap-4 items-center py-3 px-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded transition-colors',
                         hasKeyResults && 'cursor-pointer',
                     )}
                     onClick={toggleExpand}
@@ -217,15 +204,14 @@ const OkrItem = ({
                     }}
                 >
                     {/* Nombre */}
-                    <div className="col-span-1 flex items-center gap-2">
-                        {getObjectiveIcon(objective)}
+                    <div className="col-span-3 flex items-center gap-2">
                         <h4 className="font-medium text-gray-900 dark:text-gray-100 text-sm">
                             {objective.title}
                         </h4>
                     </div>
 
                     {/* Deadline */}
-                    <div className="col-span-1">
+                    <div className="col-span-1 text-center">
                         <span className="text-sm text-gray-600 dark:text-gray-400">
                             {formatDeadline(objective.dueDate)}
                         </span>
@@ -270,6 +256,11 @@ const OkrItem = ({
                             <span className="text-sm font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
                                 {progress}%
                             </span>
+                        </div>
+                    </div>
+
+                    <div className="col-span-1 flex items-center gap-3">
+                        <div className="flex items-center gap-2 flex-shrink-0">
                             <div
                                 className="flex items-center gap-1"
                                 onClick={(e) => e.stopPropagation()}
