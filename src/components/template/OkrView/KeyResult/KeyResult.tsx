@@ -84,6 +84,13 @@ const KeyResult = ({
             ? calculateProgress(keyResult.current, keyResult.target)
             : 0
 
+    // Determinar si el KR está completado
+    const isCompleted =
+        keyResult.current !== undefined &&
+        keyResult.target !== undefined &&
+        keyResult.target > 0 &&
+        keyResult.current >= keyResult.target
+
     // Obtener información completa de los responsables con iniciales
     const responsibleInfo = useMemo(() => {
         // El backend usa "responsibles", mantener compatibilidad con "owners"
@@ -174,7 +181,7 @@ const KeyResult = ({
     }, [keyResult.responsibles, keyResult.owners, users])
 
     const handleUpdateSuccess = () => {
-        setIsUpdateDialogOpen(false)
+        // No cerrar el modal, solo refrescar los datos para que el usuario pueda seguir trabajando
         onUpdateSuccess?.()
     }
 
@@ -212,6 +219,9 @@ const KeyResult = ({
             <div
                 className={classNames(
                     'p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 cursor-pointer hover:border-blue-500 dark:hover:border-blue-500 transition-colors',
+                    {
+                        'opacity-60': isCompleted, // Efecto "apagado" cuando está completado
+                    },
                     className,
                 )}
                 onClick={() => setIsUpdateDialogOpen(true)}
@@ -270,7 +280,11 @@ const KeyResult = ({
                             )}
                         </div>
                         {keyResult.current !== undefined && progress > 0 && (
-                            <Progress percent={progress} size="sm" />
+                            <Progress
+                                percent={progress}
+                                size="sm"
+                                color={isCompleted ? 'emerald-500' : undefined}
+                            />
                         )}
                     </div>
                 )}

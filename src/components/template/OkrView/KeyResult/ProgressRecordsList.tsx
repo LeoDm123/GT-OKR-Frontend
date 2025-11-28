@@ -52,12 +52,14 @@ const ProgressRecordsList = ({
             await deleteProgressRecord(okrId, keyResultId, recordToDelete)
             setMessage('Registro de progreso eliminado exitosamente')
             setMessageType('success')
-            setConfirmDialogOpen(false)
+            setConfirmDialogOpen(false) // Cerrar solo el diálogo de confirmación
             setRecordToDelete(null)
-            onDeleteSuccess?.()
+            onDeleteSuccess?.() // Refrescar datos pero mantener el modal abierto
         } catch (error: any) {
             setMessage(error.message || 'Error al eliminar el registro')
             setMessageType('danger')
+            setConfirmDialogOpen(false) // Cerrar el diálogo de confirmación incluso en error
+            setRecordToDelete(null)
         } finally {
             setIsDeleting(false)
         }
